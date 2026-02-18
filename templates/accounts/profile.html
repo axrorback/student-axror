@@ -60,6 +60,47 @@
         </div>
       </div>
 
+      {% with total=profile.present_count|add:profile.absent_count %}
+        <hr class="my-4">
+
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div class="fw-semibold">
+            <i class="bi bi-check2-square me-1 text-primary"></i>Attendance
+            <span class="text-soft small ms-1">(Davomat)</span>
+          </div>
+
+          {% if total > 0 %}
+            {% widthratio profile.present_count total 100 as pct %}
+            <span class="badge text-bg-primary">{{ pct }}%</span>
+          {% else %}
+            <span class="badge text-bg-secondary">0%</span>
+          {% endif %}
+        </div>
+
+        <div class="text-soft small mb-2">
+          Present: <span class="fw-semibold text-dark">{{ profile.present_count|default:0 }}</span>
+          <span class="mx-2">•</span>
+          Absent: <span class="fw-semibold text-dark">{{ profile.absent_count|default:0 }}</span>
+          <span class="mx-2">•</span>
+          Total: <span class="fw-semibold text-dark">{{ total }}</span>
+        </div>
+
+        <div class="progress" style="height: 10px;">
+          {% if total > 0 %}
+            {% widthratio profile.present_count total 100 as pct2 %}
+            <div class="progress-bar" role="progressbar" style="width: {{ pct2 }}%;"></div>
+          {% else %}
+            <div class="progress-bar" role="progressbar" style="width: 0%;"></div>
+          {% endif %}
+        </div>
+
+        {% if profile.absent_count >= 4 %}
+          <div class="alert alert-warning small mt-3 mb-0">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            Diqqat: Absent soni 4+ bo‘ldi. Keyingi darslarda qatnashish muhim.
+          </div>
+        {% endif %}
+      {% endwith %}
       <div class="mt-4 text-soft small">
         <i class="bi bi-arrow-repeat me-1"></i>
         Last synced: {{ profile.last_synced_at|date:"Y-m-d H:i" }}
