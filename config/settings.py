@@ -9,7 +9,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 import dj_database_url
 DEBUG = False
 
-ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost',]
+ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost','student-axror-5dbeae8bc601.herokuapp.com']
+
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
