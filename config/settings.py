@@ -11,7 +11,12 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost','student-axror-5dbeae8bc601.herokuapp.com']
 
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+CSRF_TRUSTED_ORIGINS = [
+    'https://student.axror.tech',
+    'https://student-axror-5dbeae8bc601.herokuapp.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
 
 INSTALLED_APPS = [
