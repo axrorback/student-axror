@@ -9,7 +9,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 import dj_database_url
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost',]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
