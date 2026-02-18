@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Darslar — Student Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-4">
+  <div>
+    <h3 class="fw-semibold mb-1">Darslar</h3>
+    <div class="text-soft">Upcoming va oldingi darslar</div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card card-soft p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-calendar2-week me-2 text-primary"></i>Upcoming</h5>
+
+      {% if upcoming %}
+        <div class="list-group">
+          {% for l in upcoming %}
+            <a class="list-group-item list-group-item-action"
+               href="{% url 'lesson_detail' l.id %}">
+              <div class="d-flex justify-content-between">
+                <div class="fw-semibold">{{ l.title }}</div>
+                <span class="text-muted small">{{ l.starts_at|date:"Y-m-d H:i" }}</span>
+              </div>
+              <div class="text-muted small">
+                {% if l.location %}<i class="bi bi-geo-alt me-1"></i>{{ l.location }}{% else %}—{% endif %}
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-soft">Upcoming dars yo‘q.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="card card-soft p-4">
+      <h5 class="fw-semibold mb-3"><i class="bi bi-clock-history me-2 text-primary"></i>History</h5>
+
+      {% if past %}
+        <div class="list-group">
+          {% for l in past %}
+            <a class="list-group-item list-group-item-action"
+               href="{% url 'lesson_detail' l.id %}">
+              <div class="d-flex justify-content-between">
+                <div class="fw-semibold">{{ l.title }}</div>
+                <span class="text-muted small">{{ l.starts_at|date:"Y-m-d" }}</span>
+              </div>
+              <div class="text-muted small">
+                {{ l.starts_at|date:"H:i" }} – {{ l.ends_at|date:"H:i" }}
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-soft">History hozircha yo‘q.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
