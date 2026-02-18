@@ -6,7 +6,7 @@
 <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
   <div>
     <h3 class="fw-semibold mb-1">Profil</h3>
-    <div class="text-soft">Talaba ma’lumotlari (University API’dan sinxron qilingan)</div>
+    <div class="text-soft">Talaba ma’lumotlari (Universit ERP dan realtime sinxron bo'ladi)</div>
   </div>
 
   <div class="d-flex gap-2">
@@ -101,6 +101,7 @@
           </div>
         {% endif %}
       {% endwith %}
+
       <div class="mt-4 text-soft small">
         <i class="bi bi-arrow-repeat me-1"></i>
         Last synced: {{ profile.last_synced_at|date:"Y-m-d H:i" }}
@@ -154,7 +155,7 @@
 
       <div class="alert alert-info mt-4 mb-0 small">
         <i class="bi bi-info-circle me-1"></i>
-        Bu sahifada faqat kerakli fieldlar ko‘rsatiladi. Qolgan ma’lumotlar DB’ga saqlanmagan.
+        Bu sahifada faqat kerakli fieldlar ko‘rsatiladi. Qolgan ma’lumotlar Bazaga saqlanmagan.
       </div>
 
     </div>
