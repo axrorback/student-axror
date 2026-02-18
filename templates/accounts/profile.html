@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Profil — Student Portal{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+  <div>
+    <h3 class="fw-semibold mb-1">Profil</h3>
+    <div class="text-soft">Talaba ma’lumotlari (University API’dan sinxron qilingan)</div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <a href="/" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left me-1"></i> Dashboard
+    </a>
+  </div>
+</div>
+
+<div class="row g-3">
+
+  <!-- LEFT: Main identity card -->
+  <div class="col-12 col-lg-5">
+    <div class="card card-soft p-4 h-100">
+
+      <div class="d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex align-items-center justify-content-center"
+             style="width:56px;height:56px;background:#eef3ff;">
+          <i class="bi bi-person-badge fs-3 text-primary"></i>
+        </div>
+
+        <div>
+          <div class="fw-semibold fs-5">{{ profile.full_name|default:"—" }}</div>
+          <div class="text-soft small">
+            <i class="bi bi-hash me-1"></i>AUID: <span class="fw-semibold">{{ profile.auid }}</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <div class="small">
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-soft"><i class="bi bi-envelope me-1"></i>Acharya Email</span>
+          <span class="fw-semibold">{{ profile.acharya_email|default:"—" }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-soft"><i class="bi bi-telephone me-1"></i>Mobile</span>
+          <span class="fw-semibold">{{ profile.mobile|default:"—" }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-soft"><i class="bi bi-person-vcard me-1"></i>User ID</span>
+          <span class="fw-semibold">{{ profile.user_id|default:"—" }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-soft"><i class="bi bi-fingerprint me-1"></i>Student ID</span>
+          <span class="fw-semibold">{{ profile.student_id|default:"—" }}</span>
+        </div>
+      </div>
+
+      <div class="mt-4 text-soft small">
+        <i class="bi bi-arrow-repeat me-1"></i>
+        Last synced: {{ profile.last_synced_at|date:"Y-m-d H:i" }}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: Academic info -->
+  <div class="col-12 col-lg-7">
+    <div class="card card-soft p-4">
+
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <div class="fw-semibold fs-5">
+            <i class="bi bi-journal-text me-2 text-primary"></i>Academic Info
+          </div>
+          <div class="text-soft small">Asosiy kerakli ma’lumotlar</div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <div class="p-3 rounded-3" style="background:#f7f9ff;">
+            <div class="text-soft small">Program</div>
+            <div class="fw-semibold">{{ profile.program_name|default:"—" }}</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <div class="p-3 rounded-3" style="background:#f7f9ff;">
+            <div class="text-soft small">Specialization</div>
+            <div class="fw-semibold">{{ profile.specialization|default:"—" }}</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <div class="p-3 rounded-3" style="background:#f7f9ff;">
+            <div class="text-soft small">Academic Year</div>
+            <div class="fw-semibold">{{ profile.ac_year|default:"—" }}</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <div class="p-3 rounded-3" style="background:#f7f9ff;">
+            <div class="text-soft small">Current City</div>
+            <div class="fw-semibold">{{ profile.current_city|default:"—" }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info mt-4 mb-0 small">
+        <i class="bi bi-info-circle me-1"></i>
+        Bu sahifada faqat kerakli fieldlar ko‘rsatiladi. Qolgan ma’lumotlar DB’ga saqlanmagan.
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
