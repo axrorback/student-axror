@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
 
-from .models import AllowedStudents, StudentProfile
+from .models import AllowedStudents, StudentProfile , Feedback
 
 
 @admin.register(AllowedStudents)
@@ -104,3 +104,45 @@ class StudentProfileAdmin(admin.ModelAdmin):
             request,
             "Resync hozircha action bilan emas. Student qayta login qilsa profil data avtomatik yangilanadi."
         )
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = (
+        "short_id",
+        "auid",
+        "short_feedback",
+        "created_at_local",
+    )
+
+    search_fields = ("auid", "feedback")
+    list_filter = ("created_at",)
+    ordering = ("-created_at",)
+    readonly_fields = ("id", "auid", "feedback", "created_at")
+    date_hierarchy = "created_at"
+    list_per_page = 50
+
+    fieldsets = (
+        ("Feedback Info", {
+            "fields": ("id", "auid", "feedback"),
+        }),
+        ("Meta", {
+            "fields": ("created_at",),
+        }),
+    )
+
+    # ---- Pretty display helpers ----
+
+    def short_id(self, obj):
+        return str(obj.id)[:8]
+    short_id.short_description = "ID"
+
+    def short_feedback(self, obj):
+        if len(obj.feedback) > 60:
+            return obj.feedback[:60] + "..."
+        return obj.feedback
+    short_feedback.short_description = "Feedback"
+
+    def created_at_local(self, obj):
+        return timezone.localtime(obj.created_at).strftime("%Y-%m-%d %H:%M")
+    created_at_local.short_description = "Created"
+    created_at_local.admin_order_field = "created_at"

@@ -38,3 +38,12 @@ class StudentProfile(models.Model):
 
     def __str__(self):
         return f"{self.auid} — {self.full_name}"
+
+class Feedback(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    auid = models.CharField(max_length=13)
+    feedback = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.auid

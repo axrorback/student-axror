@@ -5,7 +5,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from .decorators import student_required
-from .forms import LoginForm
+from .forms import LoginForm, FeedbackForm
 from .models import AllowedStudents, StudentProfile
 from .services.acharya_api import acharya_authenticate, acharya_get_student_details, AcharyaAuthError
 
@@ -84,3 +84,21 @@ def profile_view(request):
         return redirect("student_login")
 
     return render(request, "accounts/profile.html", {"profile": profile})
+
+
+@student_required
+def feedback_create_view(request):
+    auid = request.session["student_auid"]
+
+    if request.method == "POST":
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.auid = auid
+            obj.save()
+            messages.success(request, "Feedback qabul qilindi. Rahmat!")
+            return redirect("feedback")
+    else:
+        form = FeedbackForm()
+
+    return render(request, "accounts/feedback.html", {"form": form})
