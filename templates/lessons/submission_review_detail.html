@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Submission Detail{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i> Ortga
+  </a>
+
+  {% if submission.status == "APPROVED" %}
+    <span class="badge text-bg-success">Approved</span>
+  {% elif submission.status == "REJECTED" %}
+    <span class="badge text-bg-danger">Rejected</span>
+  {% else %}
+    <span class="badge text-bg-warning">Pending</span>
+  {% endif %}
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-4">
+    <div class="card card-soft p-4 h-100">
+      <h5 class="fw-semibold mb-3">
+        <i class="bi bi-person me-2 text-primary"></i>Student
+      </h5>
+
+      <div class="mb-2">
+        <span class="text-soft small d-block">AUID</span>
+        <div class="fw-semibold">{{ student_profile.auid }}</div>
+      </div>
+
+      {% if student_profile.full_name %}
+        <div class="mb-2">
+          <span class="text-soft small d-block">Full name</span>
+          <div>{{ student_profile.full_name }}</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-8">
+    <div class="card card-soft p-4">
+      <h4 class="fw-semibold mb-3">
+        <i class="bi bi-journal-code me-2 text-primary"></i>Submission detail
+      </h4>
+
+      <div class="mb-3">
+        <span class="text-soft small d-block">Lesson</span>
+        <div class="fw-semibold">{{ lesson.title }}</div>
+      </div>
+
+      <div class="mb-3">
+        <span class="text-soft small d-block">Assignment / Task</span>
+        <div class="fw-semibold">{{ assignment.title }}</div>
+      </div>
+
+      {% if assignment.instructions %}
+        <div class="mb-3">
+          <span class="text-soft small d-block">Task instructions</span>
+          <div class="border rounded-3 p-3 bg-body-tertiary">
+            {{ assignment.instructions|linebreaksbr }}
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="mb-3">
+        <span class="text-soft small d-block">GitHub repository</span>
+        <a href="{{ submission.github_link }}" target="_blank" class="text-decoration-none">
+          {{ submission.github_link }}
+        </a>
+      </div>
+
+      <div class="mb-3">
+        <span class="text-soft small d-block">Student description</span>
+        <div>
+          {{ submission.description|default:"Izoh yozilmagan."|linebreaksbr }}
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <span class="text-soft small d-block">Submitted at</span>
+          <div>{{ submission.submitted_at|date:"Y-m-d H:i" }}</div>
+        </div>
+
+        <div class="col-md-6">
+          <span class="text-soft small d-block">Status</span>
+          <div>{{ submission.status }}</div>
+        </div>
+      </div>
+
+      <hr>
+
+      <h5 class="fw-semibold mb-3">
+        <i class="bi bi-chat-left-text me-2 text-primary"></i>Teacher response
+      </h5>
+
+      {% if submission.review_note %}
+        <div class="alert alert-light border mb-3">
+          {{ submission.review_note|linebreaksbr }}
+        </div>
+
+        <div class="small text-soft">
+          {% if submission.reviewed_by %}
+            Reviewed by: {{ submission.reviewed_by.get_full_name }}
+          {% endif %}
+          {% if submission.reviewed_at %}
+            <br>Reviewed at: {{ submission.reviewed_at|date:"Y-m-d H:i" }}
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="text-soft">
+          Hali teacher response yozmagan ! Kuting.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
