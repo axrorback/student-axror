@@ -112,7 +112,7 @@
 
   <!-- RIGHT: Academic info -->
   <div class="col-12 col-lg-7">
-    <div class="card card-soft p-4">
+    <div class="card card-soft p-4 h-100">
 
       <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
@@ -161,6 +161,117 @@
     </div>
   </div>
 
+</div>
+
+<!-- SUBMISSIONS SECTION -->
+<div class="row g-3 mt-1">
+  <div class="col-12">
+    <div class="card card-soft p-4">
+
+      <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-3">
+        <div>
+          <div class="fw-semibold fs-5">
+            <i class="bi bi-github me-2 text-primary"></i>My Submissions
+          </div>
+          <div class="text-soft small">Topshirilgan vazifalar va teacher response</div>
+        </div>
+      </div>
+
+      {% if submissions %}
+        <div class="list-group list-group-flush">
+          {% for submission in submissions %}
+            <div class="list-group-item px-0 py-3 border-bottom">
+
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+                <div>
+                  <div class="fw-semibold fs-6">{{ submission.assignment.title }}</div>
+                  <div class="text-soft small mt-1">
+                    <i class="bi bi-journal-bookmark me-1"></i>
+                    Lesson: {{ submission.assignment.lesson.title }}
+                  </div>
+                  <div class="text-soft small">
+                    <i class="bi bi-clock-history me-1"></i>
+                    Submitted: {{ submission.submitted_at|date:"Y-m-d H:i" }}
+                  </div>
+                </div>
+
+                <div>
+                  {% if submission.status == "APPROVED" %}
+                    <span class="badge text-bg-success">Approved</span>
+                  {% elif submission.status == "REJECTED" %}
+                    <span class="badge text-bg-danger">Rejected</span>
+                  {% else %}
+                    <span class="badge text-bg-warning">Pending</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="row g-3 mt-1">
+                <div class="col-12 col-lg-6">
+                  <div class="small text-soft mb-1">GitHub Repository</div>
+                  <a href="{{ submission.github_link }}" target="_blank" class="text-decoration-none">
+                    {{ submission.github_link }}
+                  </a>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                  <div class="small text-soft mb-1">Description</div>
+                  <div class="small">
+                    {{ submission.description|default:"Izoh yozilmagan."|truncatechars:180|linebreaksbr }}
+                  </div>
+                </div>
+              </div>
+
+              {% if submission.review_note %}
+                <div class="alert alert-light border mt-3 mb-0">
+                  <div class="fw-semibold mb-2">
+                    <i class="bi bi-chat-left-text me-1"></i>Teacher Response
+                  </div>
+
+                  <div class="small">
+                    {{ submission.review_note|linebreaksbr }}
+                  </div>
+
+                  <div class="small text-soft mt-2">
+                    {% if submission.reviewed_at %}
+                      <i class="bi bi-calendar-check me-1"></i>{{ submission.reviewed_at|date:"Y-m-d H:i" }}
+                    {% endif %}
+                    {% if submission.reviewed_by %}
+                      <span class="ms-2">
+                        <i class="bi bi-person-check me-1"></i>{{ submission.reviewed_by }}
+                      </span>
+                    {% endif %}
+                  </div>
+                </div>
+              {% else %}
+                <div class="text-soft small mt-3">
+                  <i class="bi bi-hourglass-split me-1"></i>
+                  Teacher hali response yozmagan.
+                </div>
+              {% endif %}
+
+              <div class="mt-3">
+                <a href="{% url 'submission_review_detail' submission.id %}"
+                   class="btn btn-outline-primary btn-sm">
+                  <i class="bi bi-eye me-1"></i> Batafsil ko‘rish
+                </a>
+              </div>
+
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <div class="mb-2">
+            <i class="bi bi-journal-x fs-1 text-secondary"></i>
+          </div>
+          <h5 class="fw-semibold">Submissionlar yo‘q</h5>
+          <div class="text-soft">Siz hali biror assignment topshirmagansiz.</div>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
 </div>
 
 {% endblock %}
