@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'accounts',
     'attendance',
     'lessons',
+    'codepaste',
     #External Apps
     'corsheaders',
     'axes',
