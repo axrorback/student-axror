@@ -16,6 +16,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://studentapp-a685ffdf1f2c.herokuapp.com/',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'https://student.axror.tech'
 ]
 
 
