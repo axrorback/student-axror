@@ -119,6 +119,12 @@
           </li>
 
           <li class="nav-item">
+            <a class="nav-link" href="{% url 'create_paste' %}">
+              <i class="bi bi-code-slash me-1"></i>CodeCreate
+            </a>
+          </li>
+
+          <li class="nav-item">
             <a class="btn btn-sm btn-outline-secondary"
                href="{% url 'student_logout' %}">
               <i class="bi bi-box-arrow-right me-1"></i>Chiqish
@@ -163,10 +169,9 @@
       <div class="col-md-6">
         <h6 class="fw-semibold mb-2">
           <i class="bi bi-mortarboard-fill me-2"></i>
-          axror.tech Student Portal
+          student.axror.tech Student Portal
         </h6>
         <p class="text-soft small mb-0">
-          student.axror.tech
           Django & DevOps Darslari.
         </p>
       </div>
@@ -178,6 +183,8 @@
           <li><a class="footer-link" href="{% url 'dashboard' %}">Darslar</a></li>
           <li><a class="footer-link" href="{% url 'profile' %}">Profil</a></li>
           <li><a class="footer-link" href="{% url 'feedback' %}">FeedBack Yozish</a></li>
+          <li><a class="footer-link" href="{% url 'leaderboard' %}">Leaders</a></li>
+          <li><a class="footer-link" href="{% url 'create_paste' %}">CodeCreate</a></li>
         </ul>
       </div>
 
@@ -196,10 +203,10 @@
 
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-soft">
       <div>
-        © {{ now|date:"Y" }} axror.tech. All rights reserved.
+        © {{ now|date:"Y" }} student.axror.tech. All rights reserved.
       </div>
       <div>
-        Built with Django & Akhrorjon Ibrokhimjonov
+        <a href="https://www.axror.tech" target="_blank" class="footer-link">Built with axror.tech</a>
       </div>
     </div>
   </div>
