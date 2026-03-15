@@ -1,9 +1,11 @@
-# lessons/urls.py
 from django.urls import path
-from .views import dashboard_view, lessons_list_view, lesson_detail_view
+from . import views
 
 urlpatterns = [
-    path("", dashboard_view, name="dashboard"),
-    path("lessons/", lessons_list_view, name="lessons_list"),
-    path("lessons/<uuid:pk>/", lesson_detail_view, name="lesson_detail"),
+    path("dashboard/", views.dashboard_view, name="dashboard"),
+    path("lessons/", views.lessons_list_view, name="lessons_list"),
+    path("lessons/<uuid:pk>/", views.lesson_detail_view, name="lesson_detail"),
+    path("assignments/<uuid:assignment_id>/submit/", views.assignment_submit_view, name="assignment_submit"),
+    path("submissions/<uuid:submission_id>/review/", views.submission_review_detail_view, name="submission_review_detail"),
+    path("leaders/", views.leaderboard_view, name="leaderboard"),
 ]
