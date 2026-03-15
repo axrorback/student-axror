@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Assignment Submit — Student Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a href="{% url 'lesson_detail' assignment.lesson.id %}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i> Darsga qaytish
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-12 col-xl-8">
+    <div class="card card-soft p-4">
+      <div class="mb-4">
+        <h3 class="fw-semibold mb-1">Assignment submit</h3>
+        <div class="text-soft">GitHub repository link va izohni yuboring</div>
+      </div>
+
+      <div class="border rounded-3 p-3 bg-body-tertiary mb-4">
+        <div class="mb-2">
+          <span class="text-soft small d-block">Lesson</span>
+          <div class="fw-semibold">{{ assignment.lesson.title }}</div>
+        </div>
+
+        <div class="mb-2">
+          <span class="text-soft small d-block">Assignment</span>
+          <div class="fw-semibold">{{ assignment.title }}</div>
+        </div>
+
+        <div class="mb-2">
+          <span class="text-soft small d-block">Deadline</span>
+          <div>{{ assignment.deadline|date:"Y-m-d H:i" }}</div>
+        </div>
+
+        {% if assignment.instructions %}
+          <div class="mt-3">
+            <span class="text-soft small d-block mb-1">Instructions</span>
+            <div>{{ assignment.instructions|linebreaksbr }}</div>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if submission %}
+        <div class="alert alert-light border">
+          Siz bu vazifani oldin topshirgansiz. Quyidagi formani o‘zgartirib submissionni yangilashingiz mumkin.
+        </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label for="{{ form.github_link.id_for_label }}" class="form-label fw-semibold">
+            GitHub repository link
+          </label>
+          {{ form.github_link }}
+          {% if form.github_link.errors %}
+            <div class="text-danger small mt-1">
+              {{ form.github_link.errors }}
+            </div>
+          {% endif %}
+          <div class="form-text">
+            Masalan: https://github.com/username/project
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">
+            Description
+          </label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <div class="text-danger small mt-1">
+              {{ form.description.errors }}
+            </div>
+          {% endif %}
+          <div class="form-text">
+            Vazifa haqida qisqacha izoh, nima qilganingiz, qanday ishlashi haqida yozing.
+          </div>
+        </div>
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <div class="d-flex flex-wrap gap-2">
+          <button type="submit" class="btn btn-brand">
+            <i class="bi bi-check2-circle me-1"></i>
+            {% if submission %}Submissionni yangilash{% else %}Vazifani topshirish{% endif %}
+          </button>
+
+          <a href="{% url 'lesson_detail' assignment.lesson.id %}" class="btn btn-outline-secondary">
+            Bekor qilish
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

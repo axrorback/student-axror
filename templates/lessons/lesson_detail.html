@@ -9,7 +9,7 @@
   <span class="badge text-bg-secondary">{{ lesson.status }}</span>
 </div>
 
-<div class="card card-soft p-4">
+<div class="card card-soft p-4 mb-3">
   <h3 class="fw-semibold mb-2">{{ lesson.title }}</h3>
 
   <div class="text-soft mb-3">
@@ -28,6 +28,138 @@
 
   <div class="text-muted">
     {{ lesson.content|default:"Dars uchun detail yo‘q."|linebreaksbr }}
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-4">
+    <div class="card card-soft p-4 h-100">
+      <h5 class="fw-semibold mb-3">
+        <i class="bi bi-person-check me-2 text-primary"></i>Davomat
+      </h5>
+
+      {% if attendance %}
+        {% if attendance.status == "PRESENT" %}
+          <span class="badge text-bg-success mb-2">Present</span>
+        {% elif attendance.status == "LATE" %}
+          <span class="badge text-bg-warning mb-2">Late</span>
+        {% elif attendance.status == "ABSENT" %}
+          <span class="badge text-bg-danger mb-2">Absent</span>
+        {% elif attendance.status == "EXCUSED" %}
+          <span class="badge text-bg-info mb-2">Excused</span>
+        {% else %}
+          <span class="badge text-bg-secondary mb-2">{{ attendance.status }}</span>
+        {% endif %}
+
+        <div class="text-soft small">
+          Marked at: {{ attendance.marked_at|date:"Y-m-d H:i" }}
+        </div>
+      {% else %}
+        <div class="text-soft">Davomat hali belgilanmagan.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-8">
+    <div class="card card-soft p-4 h-100">
+      <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+        <div>
+          <h5 class="fw-semibold mb-1">
+            <i class="bi bi-journal-code me-2 text-primary"></i>Assignment
+          </h5>
+          <div class="text-soft small">Darsga biriktirilgan vazifa</div>
+        </div>
+
+        {% if submission %}
+          {% if submission.status == "APPROVED" %}
+            <span class="badge text-bg-success">Approved</span>
+          {% elif submission.status == "REJECTED" %}
+            <span class="badge text-bg-danger">Rejected</span>
+          {% else %}
+            <span class="badge text-bg-warning">Pending</span>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      {% if assignment %}
+        <div class="mb-3">
+          <div class="fw-semibold fs-5">{{ assignment.title }}</div>
+          <div class="text-soft small mt-1">
+            Deadline: {{ assignment.deadline|date:"Y-m-d H:i" }}
+          </div>
+        </div>
+
+        {% if assignment.instructions %}
+          <div class="border rounded-3 p-3 bg-body-tertiary mb-3">
+            {{ assignment.instructions|linebreaksbr }}
+          </div>
+        {% endif %}
+
+        {% if submission %}
+          <div class="border rounded-3 p-3 mb-3">
+            <h6 class="fw-semibold mb-3">Sizning submission</h6>
+
+            <div class="mb-2">
+              <span class="text-soft small d-block">GitHub link</span>
+              <a href="{{ submission.github_link }}" target="_blank" class="text-decoration-none">
+                {{ submission.github_link }}
+              </a>
+            </div>
+
+            <div class="mb-2">
+              <span class="text-soft small d-block">Description</span>
+              <div>{{ submission.description|default:"Izoh yo‘q."|linebreaksbr }}</div>
+            </div>
+
+            <div class="mb-2">
+              <span class="text-soft small d-block">Submitted at</span>
+              <div>{{ submission.submitted_at|date:"Y-m-d H:i" }}</div>
+            </div>
+          </div>
+
+          {% if submission.review_note %}
+            <div class="alert alert-light border mb-3">
+              <h6 class="fw-semibold mb-2">
+                <i class="bi bi-chat-left-text me-1"></i> Teacher feedback
+              </h6>
+              <div class="mb-2">{{ submission.review_note|linebreaksbr }}</div>
+
+              {% if submission.reviewed_at %}
+                <div class="small text-soft">
+                  Reviewed at: {{ submission.reviewed_at|date:"Y-m-d H:i" }}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if can_submit %}
+            <a href="{% url 'assignment_submit' assignment.id %}" class="btn btn-outline-primary">
+              <i class="bi bi-pencil-square me-1"></i> Submissionni yangilash
+            </a>
+          {% else %}
+            {% if submit_reason %}
+              <div class="alert alert-light border mb-0">
+                {{ submit_reason }}
+              </div>
+            {% endif %}
+          {% endif %}
+
+        {% else %}
+          {% if can_submit %}
+            <a href="{% url 'assignment_submit' assignment.id %}" class="btn btn-brand">
+              <i class="bi bi-upload me-1"></i> Vazifa topshirish
+            </a>
+          {% else %}
+            <div class="alert alert-light border mb-0">
+              {{ submit_reason }}
+            </div>
+          {% endif %}
+        {% endif %}
+
+      {% else %}
+        <div class="text-soft">Bu dars uchun hali assignment biriktirilmagan.</div>
+      {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}

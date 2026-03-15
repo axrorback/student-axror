@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
 
+from homework.models import AssignmentSubmission
 from .decorators import student_required
 from .forms import LoginForm, FeedbackForm
 from .models import AllowedStudents, StudentProfile
@@ -83,7 +84,17 @@ def profile_view(request):
     if not profile:
         return redirect("student_login")
 
-    return render(request, "accounts/profile.html", {"profile": profile})
+    submissions = AssignmentSubmission.objects.filter(
+        student=profile
+    ).select_related(
+        "assignment",
+        "assignment__lesson"
+    ).order_by("-submitted_at")
+
+    return render(request, "accounts/profile.html", {
+        "profile": profile,
+        "submissions": submissions
+    })
 
 
 @student_required

@@ -12,20 +12,72 @@
 <div class="row g-3">
   <div class="col-12 col-lg-6">
     <div class="card card-soft p-4">
-      <h5 class="fw-semibold mb-3"><i class="bi bi-calendar2-week me-2 text-primary"></i>Upcoming</h5>
+      <h5 class="fw-semibold mb-3">
+        <i class="bi bi-calendar2-week me-2 text-primary"></i>Upcoming
+      </h5>
 
       {% if upcoming %}
         <div class="list-group">
-          {% for l in upcoming %}
+          {% for item in upcoming %}
             <a class="list-group-item list-group-item-action"
-               href="{% url 'lesson_detail' l.id %}">
-              <div class="d-flex justify-content-between">
-                <div class="fw-semibold">{{ l.title }}</div>
-                <span class="text-muted small">{{ l.starts_at|date:"Y-m-d H:i" }}</span>
+               href="{% url 'lesson_detail' item.lesson.id %}">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                  <div class="fw-semibold">{{ item.lesson.title }}</div>
+                  <div class="text-muted small">
+                    {{ item.lesson.starts_at|date:"Y-m-d H:i" }}
+                  </div>
+                  <div class="text-muted small">
+                    {% if item.lesson.location %}
+                      <i class="bi bi-geo-alt me-1"></i>{{ item.lesson.location }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="text-end">
+                  {% if item.attendance %}
+                    {% if item.attendance.status == "PRESENT" %}
+                      <span class="badge text-bg-success">Present</span>
+                    {% elif item.attendance.status == "LATE" %}
+                      <span class="badge text-bg-warning">Late</span>
+                    {% elif item.attendance.status == "ABSENT" %}
+                      <span class="badge text-bg-danger">Absent</span>
+                    {% else %}
+                      <span class="badge text-bg-secondary">{{ item.attendance.status }}</span>
+                    {% endif %}
+                  {% endif %}
+                </div>
               </div>
-              <div class="text-muted small">
-                {% if l.location %}<i class="bi bi-geo-alt me-1"></i>{{ l.location }}{% else %}—{% endif %}
-              </div>
+
+              {% if item.assignment %}
+                <div class="mt-2 small">
+                  <div class="text-soft">
+                    <i class="bi bi-journal-code me-1"></i>
+                    Assignment: {{ item.assignment.title }}
+                  </div>
+                  <div class="text-soft">
+                    Deadline: {{ item.assignment.deadline|date:"Y-m-d H:i" }}
+                  </div>
+
+                  {% if item.submission %}
+                    <div class="mt-1">
+                      {% if item.submission.status == "APPROVED" %}
+                        <span class="badge text-bg-success">Approved</span>
+                      {% elif item.submission.status == "REJECTED" %}
+                        <span class="badge text-bg-danger">Rejected</span>
+                      {% else %}
+                        <span class="badge text-bg-warning">Pending</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <div class="mt-1">
+                      <span class="badge text-bg-secondary">Topshirilmagan</span>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
             </a>
           {% endfor %}
         </div>
@@ -37,20 +89,65 @@
 
   <div class="col-12 col-lg-6">
     <div class="card card-soft p-4">
-      <h5 class="fw-semibold mb-3"><i class="bi bi-clock-history me-2 text-primary"></i>History</h5>
+      <h5 class="fw-semibold mb-3">
+        <i class="bi bi-clock-history me-2 text-primary"></i>History
+      </h5>
 
       {% if past %}
         <div class="list-group">
-          {% for l in past %}
+          {% for item in past %}
             <a class="list-group-item list-group-item-action"
-               href="{% url 'lesson_detail' l.id %}">
-              <div class="d-flex justify-content-between">
-                <div class="fw-semibold">{{ l.title }}</div>
-                <span class="text-muted small">{{ l.starts_at|date:"Y-m-d" }}</span>
+               href="{% url 'lesson_detail' item.lesson.id %}">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                  <div class="fw-semibold">{{ item.lesson.title }}</div>
+                  <div class="text-muted small">{{ item.lesson.starts_at|date:"Y-m-d" }}</div>
+                  <div class="text-muted small">
+                    {{ item.lesson.starts_at|date:"H:i" }} – {{ item.lesson.ends_at|date:"H:i" }}
+                  </div>
+                </div>
+
+                <div class="text-end">
+                  {% if item.attendance %}
+                    {% if item.attendance.status == "PRESENT" %}
+                      <span class="badge text-bg-success">Present</span>
+                    {% elif item.attendance.status == "LATE" %}
+                      <span class="badge text-bg-warning">Late</span>
+                    {% elif item.attendance.status == "ABSENT" %}
+                      <span class="badge text-bg-danger">Absent</span>
+                    {% elif item.attendance.status == "EXCUSED" %}
+                      <span class="badge text-bg-info">Excused</span>
+                    {% else %}
+                      <span class="badge text-bg-secondary">{{ item.attendance.status }}</span>
+                    {% endif %}
+                  {% endif %}
+                </div>
               </div>
-              <div class="text-muted small">
-                {{ l.starts_at|date:"H:i" }} – {{ l.ends_at|date:"H:i" }}
-              </div>
+
+              {% if item.assignment %}
+                <div class="mt-2 small">
+                  <div class="text-soft">
+                    <i class="bi bi-journal-code me-1"></i>
+                    Assignment: {{ item.assignment.title }}
+                  </div>
+
+                  {% if item.submission %}
+                    <div class="mt-1">
+                      {% if item.submission.status == "APPROVED" %}
+                        <span class="badge text-bg-success">Approved</span>
+                      {% elif item.submission.status == "REJECTED" %}
+                        <span class="badge text-bg-danger">Rejected</span>
+                      {% else %}
+                        <span class="badge text-bg-warning">Pending</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <div class="mt-1">
+                      <span class="badge text-bg-secondary">Topshirilmagan</span>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
             </a>
           {% endfor %}
         </div>
