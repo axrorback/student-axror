@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %} Code View - {{ paste.user.full_name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  .code-container {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #eaeef5;
+    overflow: hidden;
+    position: relative; /* Overlay uchun kerak */
+  }
+
+  /* Muddati tugagan holat uchun xiralashtirish */
+  .expired-blur {
+    filter: blur(4px);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.6;
+  }
+
+  .expired-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  .expired-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    text-align: center;
+    border: 1px solid #ffc9c9;
+    max-width: 400px;
+  }
+
+  .code-header-main {
+    padding: 20px;
+    border-bottom: 1px solid #f0f2f5;
+    background: #fafbfc;
+  }
+
+  .user-info-box { display: flex; align-items: center; gap: 12px; }
+
+  .user-avatar {
+    width: 45px; height: 45px;
+    background: var(--brand-soft); color: var(--brand);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: bold;
+  }
+
+  #editor { height: 500px; border-top: 1px solid #f0f2f5; }
+
+  .meta-item { font-size: 13px; color: #6c757d; display: flex; align-items: center; gap: 5px; }
+
+  .timer-badge {
+    padding: 6px 12px; border-radius: 8px; font-variant-numeric: tabular-nums;
+  }
+
+  /* Holatga qarab ranglar */
+  .badge-active { background: #fff5f5; color: #e03131; border: 1px solid #ffc9c9; }
+  .badge-expired { background: #f1f3f5; color: #adb5bd; border: 1px solid #dee2e6; }
+
+  .code-footer {
+    padding: 15px 20px; background: #f8f9fa; border-top: 1px solid #f0f2f5;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .btn-action { border-radius: 8px; padding: 6px 16px; font-weight: 500; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-xl-10">
+
+    <div class="code-container shadow-sm">
+
+      {% if expired %}
+      <div class="expired-overlay">
+        <div class="expired-card">
+          <div class="mb-3 text-danger">
+            <i class="bi bi-clock-fill" style="font-size: 3rem;"></i>
+          </div>
+          <h4 class="fw-bold">Muddati tugagan</h4>
+          <p class="text-muted small">Ushbu kodning amal qilish muddati tugagan va u arxivlangan. Mazmunni ko'rish imkonsiz.</p>
+          <a href="{% url 'dashboard' %}" class="btn btn-brand btn-sm px-4">Dashboardga qaytish</a>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="{% if expired %}expired-blur{% endif %}">
+        <div class="code-header-main">
+          <div class="row align-items-center">
+            <div class="col-md-7">
+              <div class="user-info-box">
+                <div class="user-avatar">{{ paste.user.full_name|slice:":1" }}</div>
+                <div>
+                  <h5 class="mb-0 fw-bold text-dark">{{ paste.user.full_name }}</h5>
+                  <div class="d-flex gap-3 mt-1">
+                    <span class="meta-item"><i class="bi bi-person"></i> {{ paste.user.auid }}</span>
+                    <span class="meta-item text-primary fw-bold"><i class="bi bi-code-square"></i> {{ paste.language|upper }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-5 text-md-end mt-3 mt-md-0">
+              <div class="small text-muted mb-1">Holati:</div>
+              <div class="d-inline-flex align-items-center timer-badge {% if expired %}badge-expired{% else %}badge-active{% endif %}">
+                <i class="bi {% if expired %}bi-lock-fill{% else %}bi-clock-history{% endif %} me-2"></i>
+                <span id="timer" class="fw-bold">{% if expired %}Muddati tugadi{% else %}...{% endif %}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="editor"></div>
+
+        <div class="code-footer">
+          <div class="d-flex gap-2">
+            <button class="btn btn-light border btn-action btn-sm" onclick="copyCode(this)" {% if expired %}disabled{% endif %}>
+              <i class="bi bi-clipboard me-1"></i> Nusxalash
+            </button>
+            <button class="btn btn-light border btn-action btn-sm" onclick="copyUrl(this)" {% if expired %}disabled{% endif %}>
+              <i class="bi bi-link-45deg me-1"></i> Havola
+            </button>
+          </div>
+
+          <div>
+            <button class="btn btn-success btn-action btn-sm" onclick="shareTelegram()" {% if expired %}disabled{% endif %}>
+              <i class="bi bi-telegram me-1"></i> Ulashish
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+
+<script>
+// Faqat muddati o'tmagan bo'lsa kodni yuklaymiz
+let codeValue = `{% if not expired %}{{ paste.code|escapejs }}{% else %}// Muddati tugagan{% endif %}`;
+let shareUrl = window.location.href;
+
+require.config({ paths: { vs: 'https://unpkg.com/monaco-editor/min/vs' }});
+
+require(['vs/editor/editor.main'], function() {
+  window.editor = monaco.editor.create(document.getElementById('editor'), {
+    value: codeValue,
+    language: "{{ paste.language }}",
+    theme: "vs-dark",
+    readOnly: true,
+    automaticLayout: true,
+    fontSize: 15,
+    minimap: { enabled: !{{ expired|yesno:"true,false" }} },
+    scrollBeyondLastLine: false,
+    padding: { top: 20, bottom: 20 },
+  });
+});
+
+function showToast(msg, btn) {
+  const originalText = btn.innerHTML;
+  btn.innerHTML = `<i class="bi bi-check2"></i> Tayyor!`;
+  btn.classList.replace('btn-light', 'btn-dark');
+  setTimeout(() => {
+    btn.innerHTML = originalText;
+    btn.classList.replace('btn-dark', 'btn-light');
+  }, 2000);
+}
+
+function copyCode(btn) {
+  navigator.clipboard.writeText(codeValue);
+  showToast("Nusxalandi", btn);
+}
+
+function copyUrl(btn) {
+  navigator.clipboard.writeText(shareUrl);
+  showToast("Nusxalandi", btn);
+}
+
+function shareTelegram() {
+  const text = "Kodni ko'rish uchun havola:";
+  const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
+  window.open(tgUrl, "_blank");
+}
+
+/* TIMER FUNKSIYASI */
+{% if not expired %}
+const expireDate = new Date("{{ paste.expire_at|date:'c' }}");
+
+function updateTimer() {
+  const now = new Date();
+  const diff = expireDate - now;
+
+  if (diff <= 0) {
+    location.reload(); // Muddati tugashi bilan sahifani yangilab overlayni ko'rsatamiz
+    return;
+  }
+
+  const hours = Math.floor(diff / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+
+  document.getElementById("timer").innerText = (hours > 0 ? hours + "s " : "") + minutes + "m " + seconds + "s";
+}
+
+setInterval(updateTimer, 1000);
+updateTimer();
+{% endif %}
+</script>
+{% endblock %}
