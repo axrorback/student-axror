@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 import dj_database_url
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost','studentapp-a685ffdf1f2c.herokuapp.com','student.asadback.uz']
 
