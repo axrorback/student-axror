@@ -8,4 +8,4 @@ class AssignmentAdmin(admin.ModelAdmin):
 
 @admin.register(AssignmentSubmission)
 class AssignmentSubmissionAdmin(admin.ModelAdmin):
-    list_display = ['assignment','status','student']
+    list_display = ['assignment','status','student','submitted_at']
