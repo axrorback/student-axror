@@ -6,7 +6,7 @@ from django.db.models import ForeignKey
 class AllowedStudents(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     auid = models.CharField(max_length=13)
-    creted_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     created_by = ForeignKey(User, on_delete=models.CASCADE)
     notes = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
