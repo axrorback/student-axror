@@ -7,13 +7,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 import dj_database_url
-DEBUG = False
 
-ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost','studentapp-a685ffdf1f2c.herokuapp.com','student.asadback.uz']
+DEBUG = True
+
+ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost']
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://student.asadback.uz',
-    'https://studentapp-a685ffdf1f2c.herokuapp.com/',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'https://student.axror.tech'
@@ -34,6 +33,8 @@ INSTALLED_APPS = [
     'lessons',
     'homework',
     'codepaste',
+    'group',
+    'chat',
     #External Apps
     'corsheaders',
     'axes',
@@ -56,6 +57,7 @@ AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
 AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 1
 AXES_RESET_ON_SUCCESS = True
@@ -95,13 +97,22 @@ PASSWORD_HASHERS = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True,
-    )
-}
+NOT_PRODUCTION = True
+
+
+if NOT_PRODUCTION:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL')
+        )
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
