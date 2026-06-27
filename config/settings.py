@@ -12,10 +12,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost']
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
+CSP_DEFAULT_SRC = [
     'http://127.0.0.1:8000',
-    'https://student.axror.tech'
 ]
 
 
