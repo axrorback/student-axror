@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
-
+from group.models import GroupMember
 from homework.models import AssignmentSubmission
 from .decorators import student_required
 from .forms import LoginForm, FeedbackForm
@@ -79,21 +79,52 @@ def student_logout_view(request):
 @student_required
 def profile_view(request):
     auid = request.session["student_auid"]
-    profile = StudentProfile.objects.filter(auid=auid).first()
+
+    profile = (
+        StudentProfile.objects
+        .filter(auid=auid)
+        .first()
+    )
 
     if not profile:
         return redirect("student_login")
 
-    submissions = AssignmentSubmission.objects.filter(
-        student=profile
-    ).select_related(
-        "assignment",
-        "assignment__lesson"
-    ).order_by("-submitted_at")
+    submissions = (
+        AssignmentSubmission.objects
+        .filter(student=profile)
+        .select_related(
+            "assignment",
+            "assignment__lesson"
+        )
+        .order_by("-submitted_at")
+    )
+
+    group_member = (
+        GroupMember.objects
+        .select_related("group")
+        .prefetch_related(
+            "group__members__student"
+        )
+        .filter(student=profile)
+        .first()
+    )
+
+    group = group_member.group if group_member else None
+
+    members = []
+
+    if group:
+        members = (
+            group.members
+            .select_related("student")
+            .order_by("student__full_name")
+        )
 
     return render(request, "accounts/profile.html", {
         "profile": profile,
-        "submissions": submissions
+        "submissions": submissions,
+        "group": group,
+        "members": members,
     })
 
 
