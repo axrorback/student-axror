@@ -3,6 +3,10 @@ from django.db import models
 from django.utils import timezone
 import uuid
 from django.contrib.auth.models import User
+
+from group.models import Group
+
+
 class LessonStatus(models.TextChoices):
     SCHEDULED = "SCHEDULED", "Scheduled"
     DONE = "DONE", "Done"
@@ -10,18 +14,14 @@ class LessonStatus(models.TextChoices):
 
 class Lesson(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=255)               # Bugungi mavzu
     starts_at = models.DateTimeField()                     # boshlanish vaqti
     ends_at = models.DateTimeField()                       # tugash vaqti
     location = models.CharField(max_length=255, blank=True)
     content = models.TextField(blank=True)                 # mavzu detail / notes
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name="teachers")
-    status = models.CharField(
-        max_length=12,
-        choices=LessonStatus,
-        default=LessonStatus.SCHEDULED,
-    )
+    status = models.CharField(max_length=12,choices=LessonStatus,default=LessonStatus.SCHEDULED,)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
