@@ -110,10 +110,11 @@
     </div>
   </div>
 
-  <!-- RIGHT: Academic info -->
-  <div class="col-12 col-lg-7">
-    <div class="card card-soft p-4 h-100">
+  <!-- RIGHT: Academic info & Group Info -->
+  <div class="col-12 col-lg-7 d-flex flex-column gap-3">
 
+    <!-- Academic Info Card -->
+    <div class="card card-soft p-4 flex-grow-1">
       <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
           <div class="fw-semibold fs-5">
@@ -152,15 +153,64 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="alert alert-info mt-4 mb-0 small">
-        <i class="bi bi-info-circle me-1"></i>
-        Bu sahifada faqat kerakli fieldlar ko‘rsatiladi. Qolgan ma’lumotlar Bazaga saqlanmagan.
+    <!-- NEW: Group & Group Members Card -->
+    <div class="card card-soft p-4">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <div class="fw-semibold fs-5">
+            <i class="bi bi-people me-2 text-primary"></i>Guruh Ma'lumotlari
+          </div>
+          <div class="text-soft small">Siz a'zo bo'lgan guruh va guruhdoshlaringiz</div>
+        </div>
+        {% if group %}
+          <span class="badge text-bg-primary fs-6 px-3 py-2">Guruh: {{ group.name|default:"Nomsiz guruh" }}</span>
+        {% endif %}
       </div>
 
+      {% if group %}
+        <div class="mt-2">
+          <div class="text-soft small mb-2 fw-semibold">Guruh a'zolari ro'yxati:</div>
+          <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead class="table-light position-sticky top-0" style="z-index: 1;">
+                <tr>
+                  <th scope="col" class="py-2 ps-3">#</th>
+                  <th scope="col" class="py-2">F.I.O</th>
+                  <th scope="col" class="py-2 text-end pe-3">AUID</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for member in members %}
+                  <tr {% if member.student.auid == profile.auid %}class="table-primary fw-semibold"{% endif %}>
+                    <td class="py-2 ps-3 text-soft small">{{ forloop.counter }}</td>
+                    <td class="py-2">
+                      {{ member.student.full_name }}
+                      {% if member.student.auid == profile.auid %}
+                        <span class="badge bg-sm bg-primary ms-1 text-white small" style="font-size: 10px;">Siz</span>
+                      {% endif %}
+                    </td>
+                    <td class="py-2 text-end pe-3 text-soft font-monospace small">{{ member.student.auid }}</td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="3" class="text-center py-3 text-soft">Guruhda a'zolar topilmadi.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% else %}
+        <div class="alert alert-secondary mb-0 small text-center py-4">
+          <i class="bi bi-exclamation-circle me-1 fs-4 d-block mb-2"></i>
+          Siz hozircha hech qanday guruhga biriktirilmagansiz.
+        </div>
+      {% endif %}
     </div>
-  </div>
 
+  </div>
 </div>
 
 <!-- SUBMISSIONS SECTION -->
