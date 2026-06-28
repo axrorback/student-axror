@@ -2,163 +2,167 @@
 {% block title %}Dars — Student Portal{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <a href="{% url 'lessons_list' %}" class="btn btn-outline-secondary btn-sm">
-    <i class="bi bi-arrow-left me-1"></i> Ortga
-  </a>
-  <span class="badge text-bg-secondary">{{ lesson.status }}</span>
-</div>
+<div class="font-monospace">
 
-<div class="card card-soft p-4 mb-3">
-  <h3 class="fw-semibold mb-2">{{ lesson.title }}</h3>
-
-  <div class="text-soft mb-3">
-    <i class="bi bi-calendar-event me-1"></i> {{ lesson.starts_at|date:"Y-m-d" }}
-    <span class="ms-3">
-      <i class="bi bi-clock me-1"></i> {{ lesson.starts_at|date:"H:i" }} – {{ lesson.ends_at|date:"H:i" }}
+  <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+    <a href="{% url 'lessons_list' %}" class="btn btn-sm" style="border: 1px solid var(--border); background: #fff; color: var(--text);">
+      <i class="bi bi-arrow-left me-1"></i> abort_session --back
+    </a>
+    <span class="badge py-1.5 px-2.5 text-uppercase" style="background: var(--bg); border: 1px solid var(--border); color: var(--text);">
+      status: {{ lesson.status|lower }}
     </span>
-    {% if lesson.location %}
-      <span class="ms-3">
-        <i class="bi bi-geo-alt me-1"></i> {{ lesson.location }}
-      </span>
-    {% endif %}
   </div>
 
-  <hr>
+  <div class="p-4 mb-4 rounded-3" style="border: 1px solid var(--border); background: #fff;">
+    <h3 class="fw-bold text-dark fs-4 mb-2"><span class="text-success">λ</span> {{ lesson.title }}</h3>
 
-  <div class="text-muted">
-    {{ lesson.content|default:"Dars uchun detail yo‘q."|linebreaksbr }}
-  </div>
-</div>
-
-<div class="row g-3">
-  <div class="col-12 col-lg-4">
-    <div class="card card-soft p-4 h-100">
-      <h5 class="fw-semibold mb-3">
-        <i class="bi bi-person-check me-2 text-primary"></i>Davomat
-      </h5>
-
-      {% if attendance %}
-        {% if attendance.status == "PRESENT" %}
-          <span class="badge text-bg-success mb-2">Present</span>
-        {% elif attendance.status == "LATE" %}
-          <span class="badge text-bg-warning mb-2">Late</span>
-        {% elif attendance.status == "ABSENT" %}
-          <span class="badge text-bg-danger mb-2">Absent</span>
-        {% elif attendance.status == "EXCUSED" %}
-          <span class="badge text-bg-info mb-2">Excused</span>
-        {% else %}
-          <span class="badge text-bg-secondary mb-2">{{ attendance.status }}</span>
-        {% endif %}
-
-        <div class="text-soft small">
-          Marked at: {{ attendance.marked_at|date:"Y-m-d H:i" }}
-        </div>
-      {% else %}
-        <div class="text-soft">Davomat hali belgilanmagan.</div>
+    <div class="text-muted small mb-3">
+      <i class="bi bi-calendar-event me-1"></i> date: {{ lesson.starts_at|date:"Y-m-d" }}
+      <span class="mx-3">|</span>
+      <i class="bi bi-clock me-1"></i> runtime: {{ lesson.starts_at|date:"H:i" }} – {{ lesson.ends_at|date:"H:i" }}
+      {% if lesson.location %}
+        <span class="mx-3">|</span>
+        <i class="bi bi-geo-alt me-1"></i> node: {{ lesson.location }}
       {% endif %}
+    </div>
+
+    <hr style="border-color: var(--border);">
+
+    <div class="text-dark small" style="line-height: 1.7; font-family: var(--bs-font-monospace);">
+      {{ lesson.content|default:"[INFO] Dars uchun qo'shimcha dars rejasi yoki tafsilotlar kiritilmagan."|linebreaksbr }}
     </div>
   </div>
 
-  <div class="col-12 col-lg-8">
-    <div class="card card-soft p-4 h-100">
-      <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
-        <div>
-          <h5 class="fw-semibold mb-1">
-            <i class="bi bi-journal-code me-2 text-primary"></i>Assignment
-          </h5>
-          <div class="text-soft small">Darsga biriktirilgan vazifa</div>
-        </div>
+  <div class="row g-3">
 
-        {% if submission %}
-          {% if submission.status == "APPROVED" %}
-            <span class="badge text-bg-success">Approved</span>
-          {% elif submission.status == "REJECTED" %}
-            <span class="badge text-bg-danger">Rejected</span>
+    <div class="col-12 col-lg-4">
+      <div class="p-4 rounded-3 h-100" style="border: 1px solid var(--border); background: var(--card-bg);">
+        <h6 class="fw-bold text-dark mb-3">
+          <i class="bi bi-person-check text-success me-1"></i> auth_attendance
+        </h6>
+
+        {% if attendance %}
+          {% if attendance.status == "PRESENT" %}
+            <span class="badge py-1.5 px-2.5 mb-2.5" style="background: rgba(26, 127, 55, 0.1); color: #1a7f37; border: 1px solid rgba(26,127,55,0.2);">PRESENT</span>
+          {% elif attendance.status == "LATE" %}
+            <span class="badge py-1.5 px-2.5 mb-2.5" style="background: #fff8e1; color: #b78103; border: 1px solid #ffe082;">LATE</span>
+          {% elif attendance.status == "ABSENT" %}
+            <span class="badge py-1.5 px-2.5 mb-2.5" style="background: #ffebe9; color: #cf222e; border: 1px solid rgba(207,34,46,0.2);">ABSENT</span>
+          {% elif attendance.status == "EXCUSED" %}
+            <span class="badge py-1.5 px-2.5 mb-2.5" style="background: #ddf4ff; color: #0969da; border: 1px solid #b6e3ff;">EXCUSED</span>
           {% else %}
-            <span class="badge text-bg-warning">Pending</span>
+            <span class="badge py-1.5 px-2.5 mb-2.5 bg-light border text-muted">{{ attendance.status }}</span>
           {% endif %}
+
+          <div class="text-muted small" style="font-size: 0.75rem;">
+            marked_at: {{ attendance.marked_at|date:"Y-m-d H:i" }}
+          </div>
+        {% else %}
+          <div class="text-muted small"><i class="bi bi-hourglass-split"></i> [INFO] Davomat belgilanmagan.</div>
         {% endif %}
       </div>
+    </div>
 
-      {% if assignment %}
-        <div class="mb-3">
-          <div class="fw-semibold fs-5">{{ assignment.title }}</div>
-          <div class="text-soft small mt-1">
-            Deadline: {{ assignment.deadline|date:"Y-m-d H:i" }}
+    <div class="col-12 col-lg-8">
+      <div class="p-4 rounded-3 h-100" style="border: 1px solid var(--border); background: var(--card-bg);">
+        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+          <div>
+            <h6 class="fw-bold text-dark mb-1">
+              <i class="bi bi-journal-code text-primary me-1"></i> task_assignment_hook
+            </h6>
+            <div class="text-muted small" style="font-size: 0.75rem;">Darsga biriktirilgan laboratoriya/amaliyot vazifasi</div>
           </div>
+
+          {% if submission %}
+            {% if submission.status == "APPROVED" %}
+              <span class="badge font-monospace" style="background: rgba(26, 127, 55, 0.1); color: #1a7f37; border: 1px solid rgba(26,127,55,0.2);">APPROVED</span>
+            {% elif submission.status == "REJECTED" %}
+              <span class="badge font-monospace" style="background: #ffebe9; color: #cf222e; border: 1px solid rgba(207,34,46,0.2);">REJECTED</span>
+            {% else %}
+              <span class="badge font-monospace" style="background: #fff8e1; color: #b78103; border: 1px solid #ffe082;">PENDING_REVIEW</span>
+            {% endif %}
+          {% endif %}
         </div>
 
-        {% if assignment.instructions %}
-          <div class="border rounded-3 p-3 bg-body-tertiary mb-3">
-            {{ assignment.instructions|linebreaksbr }}
-          </div>
-        {% endif %}
-
-        {% if submission %}
-          <div class="border rounded-3 p-3 mb-3">
-            <h6 class="fw-semibold mb-3">Sizning submission</h6>
-
-            <div class="mb-2">
-              <span class="text-soft small d-block">GitHub link</span>
-              <a href="{{ submission.github_link }}" target="_blank" class="text-decoration-none">
-                {{ submission.github_link }}
-              </a>
-            </div>
-
-            <div class="mb-2">
-              <span class="text-soft small d-block">Description</span>
-              <div>{{ submission.description|default:"Izoh yo‘q."|linebreaksbr }}</div>
-            </div>
-
-            <div class="mb-2">
-              <span class="text-soft small d-block">Submitted at</span>
-              <div>{{ submission.submitted_at|date:"Y-m-d H:i" }}</div>
+        {% if assignment %}
+          <div class="mb-3">
+            <div class="fw-semibold text-dark fs-6">{{ assignment.title }}</div>
+            <div class="text-muted small mt-1">
+              deadline_ts: <span class="text-danger fw-semibold">{{ assignment.deadline|date:"Y-m-d H:i" }}</span>
             </div>
           </div>
 
-          {% if submission.review_note %}
-            <div class="alert alert-light border mb-3">
-              <h6 class="fw-semibold mb-2">
-                <i class="bi bi-chat-left-text me-1"></i> Teacher feedback
-              </h6>
-              <div class="mb-2">{{ submission.review_note|linebreaksbr }}</div>
-
-              {% if submission.reviewed_at %}
-                <div class="small text-soft">
-                  Reviewed at: {{ submission.reviewed_at|date:"Y-m-d H:i" }}
-                </div>
-              {% endif %}
+          {% if assignment.instructions %}
+            <div class="p-3 mb-3 rounded border text-muted small" style="background: var(--bg); border-color: var(--border) !important; line-height: 1.5;">
+              {{ assignment.instructions|linebreaksbr }}
             </div>
           {% endif %}
 
-          {% if can_submit %}
-            <a href="{% url 'assignment_submit' assignment.id %}" class="btn btn-outline-primary">
-              <i class="bi bi-pencil-square me-1"></i> Submissionni yangilash
-            </a>
+          {% if submission %}
+            <div class="p-3 mb-3 rounded-3 bg-white" style="border: 1px solid var(--border);">
+              <h6 class="fw-semibold text-dark small mb-3 border-bottom pb-1.5"><i class="bi bi-file-earmark-code"></i> verified_submission_meta:</h6>
+
+              <div class="mb-2.5">
+                <span class="text-muted small d-block" style="font-size: 0.75rem;">src_repository_link:</span>
+                <a href="{{ submission.github_link }}" target="_blank" class="text-primary text-break small font-monospace">
+                  <i class="bi bi-github"></i> {{ submission.github_link }}
+                </a>
+              </div>
+
+              <div class="mb-2.5">
+                <span class="text-muted small d-block" style="font-size: 0.75rem;">commit_description:</span>
+                <div class="text-dark small">{{ submission.description|default:"Izoh yo‘q."|linebreaksbr }}</div>
+              </div>
+
+              <div class="mb-0">
+                <span class="text-muted small d-block" style="font-size: 0.75rem;">push_timestamp:</span>
+                <div class="text-muted small">{{ submission.submitted_at|date:"Y-m-d H:i" }}</div>
+              </div>
+            </div>
+
+            {% if submission.review_note %}
+              <div class="alert alert-warning border-0 p-3 mb-3 small" style="background: rgba(255, 243, 205, 0.4); border-left: 3px solid #ffc107 !important; border-radius: 4px;">
+                <h6 class="fw-bold text-dark small mb-1">
+                  <i class="bi bi-chat-left-text-fill me-1"></i> lecturer_feedback:
+                </h6>
+                <div class="text-dark mb-2">{{ submission.review_note|linebreaksbr }}</div>
+
+                {% if submission.reviewed_at %}
+                  <div class="text-muted" style="font-size: 0.7rem;">
+                    reviewed_at_ts: {{ submission.reviewed_at|date:"Y-m-d H:i" }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if can_submit %}
+              <a href="{% url 'assignment_submit' assignment.id %}" class="btn btn-sm btn-dark font-monospace py-1.5 px-3">
+                <i class="bi bi-pencil-square me-1"></i> re_push_commit
+              </a>
+            {% else %}
+              {% if submit_reason %}
+                <div class="p-2 border rounded small text-muted bg-white" style="font-size: 0.75rem; border-color: #ffc9c9 !important;">
+                  <i class="bi bi-lock-fill text-danger me-1"></i> {{ submit_reason }}
+                </div>
+              {% endif %}
+            {% endif %}
+
           {% else %}
-            {% if submit_reason %}
-              <div class="alert alert-light border mb-0">
-                {{ submit_reason }}
+            {% if can_submit %}
+              <a href="{% url 'assignment_submit' assignment.id %}" class="btn btn-sm py-1.5 px-3 text-white fw-semibold font-monospace" style="background-color: var(--primary);">
+                <i class="bi bi-upload me-1"></i> execute_initial_submit
+              </a>
+            {% else %}
+              <div class="p-2 border rounded small text-muted bg-white" style="font-size: 0.75rem; border-color: #ffc9c9 !important;">
+                <i class="bi bi-lock-fill text-danger me-1"></i> {{ submit_reason }}
               </div>
             {% endif %}
           {% endif %}
 
         {% else %}
-          {% if can_submit %}
-            <a href="{% url 'assignment_submit' assignment.id %}" class="btn btn-brand">
-              <i class="bi bi-upload me-1"></i> Vazifa topshirish
-            </a>
-          {% else %}
-            <div class="alert alert-light border mb-0">
-              {{ submit_reason }}
-            </div>
-          {% endif %}
+          <div class="text-muted small"><i class="bi bi-slash-circle"></i> [NULL] Bu dars uchun hali assignment obyektlari biriktirilmagan.</div>
         {% endif %}
-
-      {% else %}
-        <div class="text-soft">Bu dars uchun hali assignment biriktirilmagan.</div>
-      {% endif %}
+      </div>
     </div>
   </div>
 </div>
