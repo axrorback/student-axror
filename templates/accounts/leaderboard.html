@@ -2,53 +2,61 @@
 {% block title %}Leaderboard — Student Portal{% endblock %}
 
 {% block content %}
+
+<!-- HEADER SECTION -->
 <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
   <div>
-    <h3 class="fw-semibold mb-1">Leaderboard</h3>
-    <div class="text-soft">Approved qilingan tasklar bo‘yicha top studentlar</div>
+    <h3 class="fw-semibold mb-1 fs-4"><span class="text-success">$</span> git_leaderboard --sort=approved_tasks</h3>
+    <div class="text-muted small">Muvaffaqiyatli (Approved) tekshirilgan vazifalar bo‘yicha top talabalar reytingi</div>
   </div>
 
-  <div class="d-flex gap-2">
-    <a href="/" class="btn btn-outline-secondary btn-sm">
-      <i class="bi bi-arrow-left me-1"></i> Dashboard
+  <div>
+    <a href="{% url 'dashboard' %}" class="btn btn-sm" style="border: 1px solid var(--border); background: #fff; color: var(--text);">
+      <i class="bi bi-arrow-left me-1"></i> dashboard
     </a>
   </div>
 </div>
 
-<div class="card card-soft p-4">
+<!-- LEADERBOARD MATRIX TABLE -->
+<div class="p-3 rounded-3" style="border: 1px solid var(--border); background: var(--card-bg);">
   {% if leaders %}
     <div class="table-responsive">
-      <table class="table align-middle mb-0">
-        <thead>
+      <table class="table table-sm table-hover align-middle mb-0 font-monospace" style="font-size: 0.85rem;">
+        <thead style="background: var(--terminal-head); border-bottom: 1px solid var(--border);">
           <tr>
-            <th>#</th>
-            <th>Student</th>
-            <th>AUID</th>
-            <th>Program</th>
-            <th>Approved Tasks</th>
+            <th scope="col" class="py-2.5 ps-3" style="width: 80px;">rank</th>
+            <th scope="col" class="py-2.5">full_name</th>
+            <th scope="col" class="py-2.5">auid</th>
+            <th scope="col" class="py-2.5">program</th>
+            <th scope="col" class="py-2.5 text-end pe-3">approved_tasks</th>
           </tr>
         </thead>
         <tbody>
           {% for student in leaders %}
-            <tr>
-              <td>
+            <tr {% if student.auid == profile.auid %}style="background-color: rgba(26, 127, 55, 0.06); font-weight: 600;"{% endif %}>
+              <td class="py-2.5 ps-3">
                 {% if forloop.counter == 1 %}
-                  <span class="badge text-bg-warning">🥇 1</span>
+                  <span class="badge" style="background: #fff8e1; color: #b78103; border: 1px solid #ffe082;">🥇 Top 1</span>
                 {% elif forloop.counter == 2 %}
-                  <span class="badge text-bg-secondary">🥈 2</span>
+                  <span class="badge" style="background: #f6f8fa; color: #57606a; border: 1px solid #d0d7de;">🥈 Top 2</span>
                 {% elif forloop.counter == 3 %}
-                  <span class="badge" style="background:#cd7f32;">🥉 3</span>
+                  <span class="badge" style="background: #fff0e6; color: #bc6c25; border: 1px solid #ffcca3;">🥉 Top 3</span>
                 {% else %}
-                  <span class="fw-semibold">{{ forloop.counter }}</span>
+                  <span class="text-muted ps-2">{{ forloop.counter }}</span>
                 {% endif %}
               </td>
 
-              <td class="fw-semibold">{{ student.full_name|default:"—" }}</td>
-              <td>{{ student.auid }}</td>
-              <td>{{ student.program_name|default:"—" }}</td>
-              <td>
-                <span class="badge text-bg-success">
-                  {{ student.approved_count }} ta
+              <td class="fw-semibold text-dark">
+                {{ student.full_name|default:"—" }}
+                {% if student.auid == profile.auid %}
+                  <span class="text-success small" style="font-size: 0.75rem;"> [you]</span>
+                {% endif %}
+              </td>
+              <td class="text-muted">{{ student.auid }}</td>
+              <td class="text-muted">{{ student.program_name|default:"—" }}</td>
+              <td class="text-end pe-3">
+                <span class="badge font-monospace" style="background-color: var(--primary); color: #fff; font-weight: 500;">
+                  {{ student.approved_count }} tasks
                 </span>
               </td>
             </tr>
@@ -57,13 +65,14 @@
       </table>
     </div>
   {% else %}
-    <div class="text-center py-5">
+    <div class="text-center py-5 font-monospace text-muted small">
       <div class="mb-2">
-        <i class="bi bi-trophy fs-1 text-secondary"></i>
+        <i class="bi bi-trophy fs-3 opacity-50"></i>
       </div>
-      <h5 class="fw-semibold">Leaderboard hozircha bo‘sh</h5>
-      <div class="text-soft">Approved submissionlar paydo bo‘lgach bu yerda ko‘rinadi.</div>
+      <div class="fw-semibold text-dark mb-1">Leaderboard hozircha bo‘sh</div>
+      <div>[INFO] Tizimda tasdiqlangan topshiriqlar mavjud emas. Logs are empty.</div>
     </div>
   {% endif %}
 </div>
+
 {% endblock %}
