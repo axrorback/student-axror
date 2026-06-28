@@ -1,72 +1,128 @@
-{% extends "base.html" %}
+{% extends "accounts/base_auth.html" %}
 {% load widget_tweaks %}
 
-{% block title %}Login — Student Portal{% endblock %}
+{% block title %}Tizimga kirish | student.axror.tech{% endblock %}
 
-{% block content %}
-<div class="row justify-content-center align-items-center" style="min-height:70vh;">
-  <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+{% block main_auth %}
+<div class="row g-4 justify-content-center align-items-stretch">
 
-    <div class="card card-soft p-4">
-
-      <!-- Header -->
-      <div class="text-center mb-4">
-        <div class="mb-3">
-          <span class="d-inline-flex align-items-center justify-content-center rounded-circle"
-                style="width:60px;height:60px;background:#eef3ff;">
-            <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
-          </span>
-        </div>
-        <h4 class="fw-semibold mb-1">Student Login</h4>
-        <div class="text-soft small">student.axror.tech Ecosystem</div>
-      </div>
-
-      <!-- Errors -->
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-danger alert-dismissible fade show small">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-
-      <!-- Form -->
-      <form method="post" novalidate>
-        {% csrf_token %}
-
-        <div class="mb-3">
-          <label class="form-label small">AUID / Username</label>
-          {{ form.username|add_class:"form-control"|attr:"placeholder:ABT24CCS008" }}
-          {% if form.username.errors %}
-            <div class="text-danger small mt-1">
-              {{ form.username.errors|striptags }}
+    <!-- LEFT: Platform Info (cat info.sh uslubida) -->
+    <div class="col-12 col-lg-7 d-none d-lg-block">
+        <div class="terminal-window h-100 d-flex flex-column">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <div class="dot dot-1"></div>
+                    <div class="dot dot-2"></div>
+                    <div class="dot dot-3"></div>
+                </div>
+                <div class="path-display"><i class="bi bi-file-code"></i> info.sh</div>
             </div>
-          {% endif %}
-        </div>
+            <div class="terminal-body small flex-grow-1 d-flex flex-column justify-content-between">
+                <div>
+                    <h2 class="fs-5 mb-3"><span class="text-prompt">axrorback@student-portal:~$</span> cat info.sh</h2>
+                    <p class="mb-4 text-muted">
+                        Salom! Bu Django va DevOps darslari jarayonini avtomatlashtirish hamda real-time monitoring qilish uchun mo'ljallangan talabalar platformasi eko-tizimidir.
+                    </p>
 
-        <div class="mb-3">
-          <label class="form-label small">Password</label>
-          {{ form.password|add_class:"form-control"|attr:"placeholder:••••••••" }}
-          {% if form.password.errors %}
-            <div class="text-danger small mt-1">
-              {{ form.password.errors|striptags }}
+                    <div class="mb-3">
+                        <span class="text-prompt">●</span> <strong class="text-dark">Universitet ERP Gateway:</strong><br>
+                        <span class="text-muted ps-3">Talabaning davomati va akademik ma'lumotlari avtomatik sinxronizatsiya qilinadi.</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="text-prompt">●</span> <strong class="text-dark">GitHub Webhook Autocheck:</strong><br>
+                        <span class="text-muted ps-3">Vazifalar repository-ga pull qilinganda tizim tomonidan avtomatik loglar yuritiladi.</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="text-prompt">●</span> <strong class="text-dark">Jonli Leaderboard:</strong><br>
+                        <span class="text-muted ps-3">Talabalar orasidagi dars faolligi va reyting tizimi.</span>
+                    </div>
+                </div>
+
+                <div class="border-dashed-geek pt-3 mt-4 text-muted d-flex justify-content-between style="font-size: 0.75rem;">
+                    <div><span class="text-success">●</span> status: active</div>
+                    <div>v4.4-stable</div>
+                </div>
             </div>
-          {% endif %}
         </div>
-
-        <button type="submit" class="btn btn-brand w-100 py-2 mt-2">
-          <i class="bi bi-box-arrow-in-right me-1"></i> Login
-        </button>
-      </form>
-
-      <div class="text-center mt-4 small text-soft">
-        <i class="bi bi-shield-lock me-1"></i>
-        Secure University Authentication
-      </div>
-
     </div>
 
-  </div>
+    <!-- RIGHT: Auth Box (Login Terminal) -->
+    <div class="col-12 col-sm-10 col-md-8 col-lg-5">
+        <div class="terminal-window h-100">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <div class="dot dot-1"></div>
+                    <div class="dot dot-2"></div>
+                    <div class="dot dot-3"></div>
+                </div>
+                <div class="path-display"><i class="bi bi-shield-lock"></i> auth_session</div>
+            </div>
+            <div class="terminal-body">
+
+                <div class="mb-4">
+                    <h4 class="fw-semibold fs-5 mb-1"><i class="bi bi-cpu text-prompt"></i> ~/auth_init</h4>
+                    <span class="text-muted small">Tizimga kirish uchun ma'lumotlarni kiriting.</span>
+                </div>
+
+                <!-- Django Messages / Errors -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger py-2 px-3 border-0 rounded-3 mb-3 small font-monospace" style="background-color: #ffebe9; color: #cf222e; border: 1px solid rgba(207,34,46,0.15)!important;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> ERR: {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Form -->
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">
+                            <span class="text-prompt">$</span> username_yoki_auid
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text input-group-geek-text border-end-0"><i class="bi bi-person"></i></span>
+                            {{ form.username|add_class:"form-control form-control-geek border-start-0"|attr:"placeholder:ABT24CCS008" }}
+                        </div>
+                        {% if form.username.errors %}
+                            <div class="text-danger small mt-1 font-monospace" style="font-size: 0.8rem;">
+                                <i class="bi bi-x-circle me-1"></i>{{ form.username.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small text-muted">
+                            <span class="text-prompt">$</span> maxfiy_parol
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text input-group-geek-text border-end-0"><i class="bi bi-key"></i></span>
+                            {{ form.password|add_class:"form-control form-control-geek border-start-0"|attr:"placeholder:••••••••" }}
+                        </div>
+                        {% if form.password.errors %}
+                            <div class="text-danger small mt-1 font-monospace" style="font-size: 0.8rem;">
+                                <i class="bi bi-x-circle me-1"></i>{{ form.password.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-geek-primary w-100">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> execute_login
+                    </button>
+                </form>
+
+                <div class="text-center mt-4 pt-3 border-dashed-geek">
+                    <a href="https://www.axror.tech" target="_blank" class="text-decoration-none small text-accent" style="font-size: 0.8rem;">
+                        <i class="bi bi-arrow-left-short"></i> axror.tech tarmog'iga qaytish
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
