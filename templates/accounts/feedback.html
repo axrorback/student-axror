@@ -3,39 +3,55 @@
 {% block title %}Feedback — Student Portal{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-12 col-md-8 col-lg-6">
+<div class="row justify-content-center font-monospace">
+  <div class="col-12 col-md-10 col-lg-8">
 
-    <div class="d-flex align-items-start justify-content-between gap-2 mb-3">
+    <!-- HEADER SECTION -->
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-4 border-bottom pb-3">
       <div>
-        <h3 class="fw-semibold mb-1">Feedback</h3>
-        <div class="text-soft">Taklif yoki muammo bo‘lsa yozing. (AUID avtomatik biriktiriladi)</div>
+        <h3 class="fw-semibold mb-1 fs-5"><span class="text-success">$</span> send_feedback --issue-report</h3>
+        <div class="text-muted small" style="font-size: 0.8rem;">Taklif, fikr yoki tizimdagi muammolar bo‘lsa yozib qoldiring. <span class="text-success">(AUID avtomatik biriktiriladi)</span></div>
       </div>
 
-      <a href="{% url 'profile' %}" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-person-circle me-1"></i> Profil
+      <a href="{% url 'profile' %}" class="btn btn-sm text-nowrap" style="border: 1px solid var(--border); background: #fff; color: var(--text); font-size: 0.8rem;">
+        <i class="bi bi-person-circle me-1"></i> profil
       </a>
     </div>
 
-    <div class="card card-soft p-4">
+    <!-- FORM WINDOW BOX -->
+    <div class="p-3 rounded-3" style="background: var(--bg); border: 1px solid var(--border);">
+
+      <div class="mb-3 d-flex align-items-center gap-2 text-muted small" style="font-size: 0.75rem;">
+        <i class="bi bi-terminal-fill text-success"></i>
+        <span>session_user_status: authenticated</span>
+      </div>
 
       <form method="post" novalidate>
         {% csrf_token %}
 
         <div class="mb-3">
-          <label class="form-label small">Xabar</label>
-          {{ form.feedback|add_class:"form-control"|attr:"style:resize:vertical;" }}
+          <label class="form-label small text-muted fw-semibold">
+            <span class="text-success">$</span> message_body <span class="text-danger">*</span>
+          </label>
+
+          {{ form.feedback|add_class:"form-control form-control-geek font-monospace"|attr:"rows:5"|attr:"style:resize:vertical; background-color: #fff; border: 1px solid var(--border); font-size: 0.85rem;"|attr:"placeholder:Tizimni yaxshilash bo'yicha taklifingiz yoki log xatoliklar..." }}
+
           {% if form.feedback.errors %}
-            <div class="text-danger small mt-1">{{ form.feedback.errors|striptags }}</div>
+            <div class="text-danger small mt-2 font-monospace" style="font-size: 0.8rem;">
+              <i class="bi bi-x-circle-fill me-1"></i> ERR_VALIDATION: {{ form.feedback.errors|striptags }}
+            </div>
           {% endif %}
-          <div class="form-text text-soft">
-            Masalan: “Dars jadvali qismida filtrlash qo‘shsak”, “Bugungi dars sahifasida xatolik bor”, va h.k.
+
+          <div class="form-text text-muted small mt-2" style="font-size: 0.75rem; line-height: 1.4;">
+            <span class="text-success">ℹ</span> Masalan: <span class="text-dark">“Dars jadvali qismida filtrlash qo‘shsak yaxshi bo‘lardi”</span> yoki <span class="text-dark">“Bugungi dars topshiriqlar sahifasida webhook loglari kechikmoqda”</span>.
           </div>
         </div>
 
-        <button type="submit" class="btn btn-brand w-100 py-2">
-          <i class="bi bi-send me-1"></i> Yuborish
-        </button>
+        <div class="mt-4 pt-2 border-top border-secondary-subtle d-flex justify-content-end">
+          <button type="submit" class="btn btn-geek-primary py-2 px-4" style="background-color: var(--primary); color: #fff; font-size: 0.85rem; font-weight: 600; border-radius: 6px; border: 1px solid rgba(27,31,36,0.15);">
+            <i class="bi bi-send-fill me-1"></i> execute_submit
+          </button>
+        </div>
       </form>
 
     </div>
