@@ -5,54 +5,64 @@
 {% block extra_head %}
 <style>
     .editor-container {
-        background: white;
-        border-radius: 16px;
+        background: #fff;
+        border-radius: 6px;
         overflow: hidden;
-        border: 1px solid #eaeef5;
+        border: 1px solid var(--border);
     }
     .editor-toolbar {
-        background: #f8f9fa;
-        padding: 12px 20px;
-        border-bottom: 1px solid #eaeef5;
+        background: var(--terminal-head);
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
         align-items: center;
+        font-monospace;
     }
     #editor {
         width: 100%;
-        height: 500px;
+        height: 520px;
+        border-bottom: 1px solid var(--border);
     }
     .form-select-custom {
         width: auto;
-        min-width: 150px;
-        border-radius: 8px;
+        min-width: 160px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        background-color: #fff;
+        border: 1px solid var(--border);
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="mb-4">
-            <h3 class="fw-bold"><i class="bi bi-code-slash me-2 text-primary"></i>Kodni ulashish</h3>
-            <p class="text-soft">Kodingizni pastga joylang, tilni tanlang va yuklash tugmasini bosing.</p>
+<div class="row justify-content-center font-monospace">
+    <div class="col-12 col-lg-10">
+
+        <div class="mb-4 border-bottom pb-3">
+            <h3 class="fw-semibold mb-1 fs-4"><span class="text-success">$</span> share_code --pastebin</h3>
+            <p class="text-muted small mb-0">Kodingizni yoki terminal log xatoliklarini joylang, sintaksisni tanlang va havola oling.</p>
         </div>
 
-        <form method="post" id="codeForm">
+        <form method="post" id="codeForm" novalidate>
             {% csrf_token %}
-            
-            <div class="card-soft editor-container">
+
+            <div class="editor-container">
                 <div class="editor-toolbar">
                     <div class="d-flex align-items-center gap-2">
-                        <label for="language" class="small fw-bold text-secondary">TIL:</label>
-                        <select name="language" id="language" class="form-select form-select-sm form-select-custom">
-                            <option value="python">Python/Django</option>
-                            <option value="html">HTML</option>
-                            <option value="shell">Shell / Bash / Terminal</option>
+                        <label for="language" class="small fw-semibold text-dark" style="font-size: 0.75rem;">
+                            <span class="text-success">λ</span> syntax:
+                        </label>
+                        <select name="language" id="language" class="form-select form-select-sm form-select-custom shadow-none font-monospace">
+                            <option value="python">Python / Django</option>
+                            <option value="html">HTML / Django Template</option>
+                            <option value="shell">Shell / Bash / Log</option>
+                            <option value="go">Go (Golang)</option>
+                            <option value="php">PHP / Laravel</option>
                         </select>
                     </div>
                     <div>
-                        <span class="badge bg-light text-dark border">Code Editor</span>
+                        <span class="badge font-monospace" style="border: 1px solid var(--border); color: var(--text); background: #fff; font-size: 0.7rem;">monaco_core.sh</span>
                     </div>
                 </div>
 
@@ -60,13 +70,17 @@
 
                 <div id="editor"></div>
 
-                <div class="p-3 bg-light border-top d-flex justify-content-end">
-                    <button type="submit" class="btn btn-brand px-4">
-                        <i class="bi bi-cloud-arrow-up-fill me-2"></i>Kodni yuklash
+                <div class="p-3 d-flex justify-content-between align-items-center" style="background: var(--bg);">
+                    <div class="text-muted small d-none d-sm-block" style="font-size: 0.75rem;">
+                        <i class="bi bi-info-circle text-success"></i> Ctrl+S bound to upload script.
+                    </div>
+                    <button type="submit" class="btn btn-sm py-2 px-4 font-monospace text-white fw-semibold" style="background-color: var(--primary); border-radius: 4px; border: 1px solid rgba(27,31,36,0.15);">
+                        <i class="bi bi-cloud-arrow-up-fill me-1"></i> execute_deploy --share
                     </button>
                 </div>
             </div>
         </form>
+
     </div>
 </div>
 {% endblock %}
@@ -78,24 +92,28 @@
 require.config({ paths: { vs: 'https://unpkg.com/monaco-editor/min/vs' }});
 
 require(['vs/editor/editor.main'], function () {
-    // Editor yaratish
+    // Terminal uslubidagi monaco instansiyasi
     const editor = monaco.editor.create(document.getElementById('editor'), {
-        value: '# Bu yerga kod yozing / Yoki Xatolikni Paste qiling va havolani ulashing Telegram : @Acharya_Django\n',
+        value: '# Bu yerga kod yozing yoki log xatoliklarini joylang...\n# Telegram: @axrorback\n',
         language: 'python',
-        theme: 'vs-dark',
+        theme: 'vs-dark', // Sening qorong'u/terminal muhiting uchun mukammal mos tushadi
         automaticLayout: true,
         fontSize: 14,
+        fontFamily: 'JetBrains Mono, Fira Code, Menlo, Monaco, Consolas, monospace',
         minimap: { enabled: true },
         scrollBeyondLastLine: false,
-        padding: { top: 16 }
+        lineHeight: 22,
+        padding: { top: 12, bottom: 12 }
     });
 
+    // Til o'zgarganda sintaksis ranglarini dinamik yangilash
     const languageSelect = document.getElementById('language');
     languageSelect.addEventListener('change', function() {
         const newLang = this.value;
         monaco.editor.setModelLanguage(editor.getModel(), newLang);
     });
 
+    // Form yuborilishidan oldin Monaco qiymatini hidden inputga o'tkazish
     document.getElementById("codeForm").onsubmit = function() {
         document.getElementById("code_input").value = editor.getValue();
     };
