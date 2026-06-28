@@ -220,6 +220,15 @@
                             <i class="bi bi-speedometer2"></i> dashboard
                         </a>
                     </li>
+
+                    {% if user.is_authenticated and user.is_staff %}
+                        <li class="sidebar-item border-bottom border-dashed pb-2 mb-2" style="border-color: var(--border) !important;">
+                            <a class="sidebar-link text-primary fw-semibold" href="{% url 'teacher_lessons' %}" style="background: rgba(9, 105, 218, 0.05);">
+                                <i class="bi bi-journal-check"></i> teacher_lessons
+                            </a>
+                        </li>
+                    {% endif %}
+
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="{% url 'profile' %}">
                             <i class="bi bi-person-circle"></i> profil_ma'lumot
@@ -275,16 +284,23 @@
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" style="width: var(--sidebar-width); font-family: var(--font-mono);">
         <div class="offcanvas-header border-bottom">
             <h5 class="offcanvas-title text-success fw-bold"><i class="bi bi-cpu"></i> Navigation</h5>
-            <button type="button" class="btn-close shadow-none" data-bs-shadow="none" data-bs-dismiss="offcanvas"></button>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body d-flex flex-column justify-content-between p-0">
             <ul class="sidebar-menu">
                 <li class="sidebar-item"><a class="sidebar-link" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2"></i> dashboard</a></li>
+
+                {% if user.is_authenticated and user.is_staff %}
+                    <li class="sidebar-item border-bottom pb-2 mb-2">
+                        <a class="sidebar-link text-primary fw-semibold" href="{% url 'teacher_lessons' %}" style="background: rgba(9, 105, 218, 0.05);"><i class="bi bi-journal-check"></i> teacher_lessons</a>
+                    </li>
+                {% endif %}
+
                 <li class="sidebar-item"><a class="sidebar-link" href="{% url 'profile' %}"><i class="bi bi-person-circle"></i> profil</a></li>
                 <li class="sidebar-item"><a class="sidebar-link" href="{% url 'leaderboard' %}"><i class="bi bi-trophy"></i> leaderboard</a></li>
                 <li class="sidebar-item"><a class="sidebar-link" href="{% url 'create_paste' %}"><i class="bi bi-code-slash"></i> code_create</a></li>
                 <li class="sidebar-item"><a class="sidebar-link" href="{% url 'feedback' %}"><i class="bi bi-chat-left-text"></i> feedback</a></li>
-                {% if request.session.student_auid %}
+                {% if request.session.student_auid or user.is_authenticated %}
                     <li class="sidebar-item border-top mt-2 pt-2">
                         <a class="sidebar-link text-danger" href="{% url 'student_logout' %}"><i class="bi bi-box-arrow-right"></i> chiqish</a>
                     </li>
