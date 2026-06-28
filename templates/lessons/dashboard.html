@@ -2,200 +2,200 @@
 {% block title %}Dashboard — Student Portal{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-4">
-  <div>
-    <h3 class="fw-semibold mb-1">Dashboard</h3>
-    <div class="text-soft">Bugungi dars va yaqin darslar</div>
+<div class="font-monospace">
+
+  <!-- TOP RUNTIME BANNER -->
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4 border-bottom pb-3">
+    <div>
+      <h3 class="fw-semibold mb-1 fs-4"><span class="text-success">$</span> system_dashboard --active-session</h3>
+      <div class="text-muted small">Bugungi dars jadvali, tizim holati va vazifalar xronologiyasi</div>
+    </div>
+    <a href="{% url 'lessons_list' %}" class="btn btn-sm" style="border: 1px solid var(--border); background: #fff; color: var(--text);">
+      <i class="bi bi-journal-text me-1"></i> fetch_all_lessons
+    </a>
   </div>
 
-  <a href="{% url 'lessons_list' %}" class="btn btn-outline-secondary btn-sm">
-    <i class="bi bi-journal-text me-1"></i> Barcha darslar
-  </a>
-</div>
+  <div class="row g-3">
 
-<div class="row g-3">
-  <div class="col-12 col-lg-7">
-    <div class="card card-soft p-4">
+    <!-- LEFT PANEL: PRIMARY SYSTEM TARGET -->
+    <div class="col-12 col-lg-8">
+      <div class="p-4 rounded-3" style="border: 1px solid var(--border); background: var(--card-bg);">
 
-      {% if today_lesson %}
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <div class="text-soft small mb-1">
-              <i class="bi bi-calendar-check me-1"></i>Bugungi dars
+        {% if today_lesson %}
+          <!-- TODAY'S LOG HEADER -->
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <div class="text-muted small mb-1">
+                <i class="bi bi-terminal-box text-success me-1"></i> [STATUS: ACTIVE_RUNNING]
+              </div>
+              <h4 class="fw-bold text-dark fs-5 mb-1">{{ today_lesson.title }}</h4>
+              <div class="text-muted small">
+                <i class="bi bi-clock me-1"></i> {{ today_lesson.starts_at|date:"H:i" }} – {{ today_lesson.ends_at|date:"H:i" }}
+                {% if today_lesson.location %}
+                  <span class="mx-2">|</span>
+                  <i class="bi bi-geo-alt me-1"></i> {{ today_lesson.location }}
+                {% endif %}
+              </div>
             </div>
-            <h4 class="fw-semibold mb-1">{{ today_lesson.title }}</h4>
-            <div class="text-soft">
-              <i class="bi bi-clock me-1"></i>
-              {{ today_lesson.starts_at|date:"H:i" }} – {{ today_lesson.ends_at|date:"H:i" }}
-              {% if today_lesson.location %}
-                <span class="ms-2">
-                  <i class="bi bi-geo-alt me-1"></i>{{ today_lesson.location }}
-                </span>
-              {% endif %}
-            </div>
+            <span class="badge font-monospace py-1.5 px-2.5" style="background: rgba(26, 127, 55, 0.1); color: var(--primary); border: 1px solid rgba(26,127,55,0.2);">today_runtime</span>
           </div>
 
-          <span class="badge text-bg-success">Today</span>
-        </div>
+          <div class="p-3 my-3 rounded" style="background: var(--bg); border-left: 3px solid var(--border); font-size: 0.85rem; line-height: 1.6; color: var(--text);">
+            {{ today_lesson.content|default:"[INFO] Bugungi dars uchun qo'shimcha tushuntirish va tafsilotlar kiritilmagan."|linebreaksbr }}
+          </div>
 
-        <hr>
-
-        <div class="text-soft mb-3">
-          {{ today_lesson.content|default:"Bugun uchun detail yo‘q."|linebreaksbr }}
-        </div>
-
-        <div class="mb-3">
-          <h6 class="fw-semibold mb-2">Davomat</h6>
-          {% if today_attendance %}
-            {% if today_attendance.status == "PRESENT" %}
-              <span class="badge text-bg-success">Present</span>
-            {% elif today_attendance.status == "LATE" %}
-              <span class="badge text-bg-warning">Late</span>
-            {% elif today_attendance.status == "ABSENT" %}
-              <span class="badge text-bg-danger">Absent</span>
-            {% else %}
-              <span class="badge text-bg-secondary">{{ today_attendance.status }}</span>
-            {% endif %}
-          {% else %}
-            <span class="badge text-bg-light text-dark">Hali belgilanmagan</span>
-          {% endif %}
-        </div>
-
-        {% if today_assignment %}
-          <div class="border rounded-3 p-3 mb-3 bg-body-tertiary">
-            <div class="d-flex justify-content-between align-items-start gap-2">
-              <div>
-                <div class="small text-soft mb-1">
-                  <i class="bi bi-journal-code me-1"></i>Bugungi vazifa
-                </div>
-                <div class="fw-semibold">{{ today_assignment.title }}</div>
-                <div class="text-soft small mt-1">
-                  Deadline: {{ today_assignment.deadline|date:"Y-m-d H:i" }}
-                </div>
-              </div>
-
-              {% if today_submission %}
-                {% if today_submission.status == "APPROVED" %}
-                  <span class="badge text-bg-success">Approved</span>
-                {% elif today_submission.status == "REJECTED" %}
-                  <span class="badge text-bg-danger">Rejected</span>
-                {% else %}
-                  <span class="badge text-bg-warning">Pending</span>
-                {% endif %}
+          <!-- ATTENDANCE MONITOR -->
+          <div class="mb-4">
+            <span class="text-muted d-block small mb-1.5">User Attendance Status:</span>
+            {% if today_attendance %}
+              {% if today_attendance.status == "PRESENT" %}
+                <span class="badge py-1.5 px-2.5" style="background: rgba(26, 127, 55, 0.1); color: #1a7f37; border: 1px solid rgba(26,127,55,0.2);">PRESENT</span>
+              {% elif today_attendance.status == "LATE" %}
+                <span class="badge py-1.5 px-2.5" style="background: #fff8e1; color: #b78103; border: 1px solid #ffe082;">LATE</span>
+              {% elif today_attendance.status == "ABSENT" %}
+                <span class="badge py-1.5 px-2.5" style="background: #ffebe9; color: #cf222e; border: 1px solid rgba(207,34,46,0.2);">ABSENT</span>
               {% else %}
-                <span class="badge text-bg-secondary">Topshirilmagan</span>
+                <span class="badge py-1.5 px-2.5 bg-light border text-muted text-uppercase">{{ today_attendance.status }}</span>
               {% endif %}
-            </div>
-
-            <div class="mt-3 d-flex flex-wrap gap-2">
-              <a href="{% url 'lesson_detail' today_lesson.id %}" class="btn btn-brand btn-sm">
-                <i class="bi bi-arrow-right me-1"></i> Darsni ochish
-              </a>
-
-              {% if today_assignment %}
-                {% if today_can_submit %}
-                  <a href="{% url 'assignment_submit' today_assignment.id %}" class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-upload me-1"></i>
-                    {% if today_submission %}Vazifani yangilash{% else %}Vazifa topshirish{% endif %}
-                  </a>
-                {% else %}
-                  <button class="btn btn-outline-secondary btn-sm" disabled>
-                    <i class="bi bi-lock me-1"></i> Topshirib bo‘lmaydi
-                  </button>
-                {% endif %}
-              {% endif %}
-            </div>
-
-            {% if not today_can_submit and today_submit_reason %}
-              <div class="alert alert-light border mt-3 mb-0 small">
-                {{ today_submit_reason }}
-              </div>
+            {% else %}
+              <span class="badge py-1.5 px-2.5 text-dark bg-light border" style="border-style: dashed !important;"><i class="bi bi-hourglass-split me-1"></i> pending_teacher_sign</span>
             {% endif %}
           </div>
-        {% else %}
-          <a href="{% url 'lesson_detail' today_lesson.id %}" class="btn btn-brand">
-            <i class="bi bi-arrow-right me-1"></i> Darsni ochish
+
+          <!-- ASSIGNMENT LOG ACTION -->
+          {% if today_assignment %}
+            <div class="p-3 border rounded-3" style="background: var(--bg); border-color: var(--border) !important;">
+              <div class="d-flex justify-content-between align-items-start gap-2 flex-column flex-sm-row">
+                <div>
+                  <div class="small text-muted mb-1">
+                    <i class="bi bi-journal-code text-primary me-1"></i> attached_assignment_meta:
+                  </div>
+                  <div class="fw-semibold text-dark fs-6">{{ today_assignment.title }}</div>
+                  <div class="text-muted small mt-1">
+                    deadline_ts: <span class="text-danger fw-semibold">{{ today_assignment.deadline|date:"Y-m-d H:i" }}</span>
+                  </div>
+                </div>
+
+                {% if today_submission %}
+                  {% if today_submission.status == "APPROVED" %}
+                    <span class="badge font-monospace" style="background: rgba(26, 127, 55, 0.1); color: #1a7f37; border: 1px solid rgba(26,127,55,0.2);">APPROVED</span>
+                  {% elif today_submission.status == "REJECTED" %}
+                    <span class="badge font-monospace" style="background: #ffebe9; color: #cf222e; border: 1px solid rgba(207,34,46,0.2);">REJECTED</span>
+                  {% else %}
+                    <span class="badge font-monospace" style="background: #fff8e1; color: #b78103; border: 1px solid #ffe082;">PENDING_REVIEW</span>
+                  {% endif %}
+                {% else %}
+                  <span class="badge font-monospace bg-secondary-subtle text-muted border">NOT_SUBMITTED</span>
+                {% endif %}
+              </div>
+
+              <!-- CONTROLS -->
+              <div class="mt-3 d-flex flex-wrap gap-2">
+                <a href="{% url 'lesson_detail' today_lesson.id %}" class="btn btn-sm btn-dark font-monospace py-1.5 px-3">
+                  view_workspace
+                </a>
+
+                {% if today_assignment %}
+                  {% if today_can_submit %}
+                    <a href="{% url 'assignment_submit' today_assignment.id %}" class="btn btn-sm py-1.5 px-3 text-white fw-semibold" style="background-color: var(--primary);">
+                      <i class="bi bi-upload me-1"></i> {% if today_submission %}re_push_commit{% else %}execute_submit{% endif %}
+                    </a>
+                  {% else %}
+                    <button class="btn btn-sm btn-light border font-monospace text-muted py-1.5 px-3" disabled>
+                      <i class="bi bi-lock-fill me-1"></i> submission_locked
+                    </button>
+                  {% endif %}
+                {% endif %}
+              </div>
+
+              {% if not today_can_submit and today_submit_reason %}
+                <div class="p-2 border rounded mt-2 small text-muted bg-white" style="font-size: 0.75rem; border-color: #ffc9c9 !important;">
+                  <i class="bi bi-exclamation-circle text-danger me-1"></i> Link lock reason: {{ today_submit_reason }}
+                </div>
+              {% endif %}
+            </div>
+          {% else %}
+            <a href="{% url 'lesson_detail' today_lesson.id %}" class="btn btn-sm btn-dark font-monospace py-1.5 px-3">
+              view_workspace
+            </a>
+          {% endif %}
+
+        {% elif upcoming_lesson %}
+          <!-- UPCOMING LOG HEADER -->
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <div class="text-muted small mb-1">
+                <i class="bi bi-clock-history text-primary me-1"></i> [STATUS: QUEUED_STAGING]
+              </div>
+              <h4 class="fw-bold text-dark fs-5 mb-1">{{ upcoming_lesson.title }}</h4>
+              <div class="text-muted small">
+                <i class="bi bi-calendar-event me-1"></i> {{ upcoming_lesson.starts_at|date:"Y-m-d H:i" }}
+                {% if upcoming_lesson.location %}
+                  <span class="mx-2">|</span>
+                  <i class="bi bi-geo-alt me-1"></i> {{ upcoming_lesson.location }}
+                {% endif %}
+              </div>
+            </div>
+            <span class="badge font-monospace py-1.5 px-2.5 bg-light border text-primary">upcoming_queue</span>
+          </div>
+
+          <div class="p-3 my-3 rounded" style="background: var(--bg); border-left: 3px solid var(--border); font-size: 0.85rem; color: var(--text);">
+            {{ upcoming_lesson.content|default:"[INFO] Keyingi rejalashtirilgan sessiya tafsilotlari tez orada ochiladi."|linebreaksbr }}
+          </div>
+
+          {% if upcoming_assignment %}
+            <div class="p-3 border rounded-3 mb-3" style="background: var(--bg); border-color: var(--border) !important;">
+              <div class="small text-muted mb-1"><i class="bi bi-journal-code me-1"></i> future_assignment_meta:</div>
+              <div class="fw-semibold text-dark small">{{ upcoming_assignment.title }}</div>
+              <div class="text-muted small mt-1">
+                deadline_ts: {{ upcoming_assignment.deadline|date:"Y-m-d H:i" }}
+              </div>
+
+              {% if upcoming_submission %}
+                <div class="mt-2">
+                  {% if upcoming_submission.status == "APPROVED" %}
+                    <span class="badge font-monospace" style="background: rgba(26, 127, 55, 0.1); color: #1a7f37; border: 1px solid rgba(26,127,55,0.2);">APPROVED</span>
+                  {% elif upcoming_submission.status == "REJECTED" %}
+                    <span class="badge font-monospace" style="background: #ffebe9; color: #cf222e; border: 1px solid rgba(207,34,46,0.2);">REJECTED</span>
+                  {% else %}
+                    <span class="badge font-monospace" style="background: #fff8e1; color: #b78103; border: 1px solid #ffe082;">PENDING_REVIEW</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          <a href="{% url 'lesson_detail' upcoming_lesson.id %}" class="btn btn-sm btn-dark font-monospace py-1.5 px-3">
+            preview_workspace
           </a>
-        {% endif %}
 
-      {% elif upcoming_lesson %}
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <div class="text-soft small mb-1">
-              <i class="bi bi-calendar2-week me-1"></i>Keyingi dars
-            </div>
-            <h4 class="fw-semibold mb-1">{{ upcoming_lesson.title }}</h4>
-            <div class="text-soft">
-              <i class="bi bi-clock me-1"></i>
-              {{ upcoming_lesson.starts_at|date:"Y-m-d H:i" }}
-              {% if upcoming_lesson.location %}
-                <span class="ms-2">
-                  <i class="bi bi-geo-alt me-1"></i>{{ upcoming_lesson.location }}
-                </span>
-              {% endif %}
-            </div>
-          </div>
-
-          <span class="badge text-bg-primary">Upcoming</span>
-        </div>
-
-        <hr>
-
-        <div class="text-soft mb-3">
-          {{ upcoming_lesson.content|default:"Keyingi dars uchun detail yo‘q."|linebreaksbr }}
-        </div>
-
-        {% if upcoming_assignment %}
-          <div class="border rounded-3 p-3 mb-3 bg-body-tertiary">
-            <div class="small text-soft mb-1">
-              <i class="bi bi-journal-code me-1"></i>Biriktirilgan vazifa
-            </div>
-            <div class="fw-semibold">{{ upcoming_assignment.title }}</div>
-            <div class="text-soft small mt-1">
-              Deadline: {{ upcoming_assignment.deadline|date:"Y-m-d H:i" }}
-            </div>
-
-            {% if upcoming_submission %}
-              <div class="mt-2">
-                {% if upcoming_submission.status == "APPROVED" %}
-                  <span class="badge text-bg-success">Approved</span>
-                {% elif upcoming_submission.status == "REJECTED" %}
-                  <span class="badge text-bg-danger">Rejected</span>
-                {% else %}
-                  <span class="badge text-bg-warning">Pending</span>
-                {% endif %}
-              </div>
-            {% endif %}
+        {% else %}
+          <!-- NO DATA / IDLE -->
+          <div class="text-center py-5">
+            <div class="mb-2"><i class="bi bi-terminal-dash fs-2 text-muted"></i></div>
+            <h6 class="fw-bold text-dark">STATUS: SYSTEM_IDLE</h6>
+            <div class="text-muted small">Navbatda faol dars topilmadi. Ma'murlar yangi logs yuklashi kutilmoqda.</div>
           </div>
         {% endif %}
 
-        <a href="{% url 'lesson_detail' upcoming_lesson.id %}" class="btn btn-brand">
-          <i class="bi bi-arrow-right me-1"></i> Darsni ochish
-        </a>
+      </div>
+    </div>
 
-      {% else %}
-        <div class="text-center py-5">
-          <div class="mb-2"><i class="bi bi-emoji-neutral fs-1 text-secondary"></i></div>
-          <h5 class="fw-semibold">Hozircha dars yo‘q</h5>
-          <div class="text-soft">Admin dars qo‘shganda bu yerda ko‘rinadi.</div>
-        </div>
-      {% endif %}
-
+    <!-- RIGHT PANEL: CONTEXT RULES -->
+    <div class="col-12 col-lg-4">
+      <div class="p-4 rounded-3 h-100" style="border: 1px solid var(--border); background: var(--card-bg);">
+        <h6 class="fw-bold text-dark mb-3">
+          <i class="bi bi-shield-alert text-warning me-1"></i> system_security_policy
+        </h6>
+        <ul class="ps-3 text-muted small mb-0" style="line-height: 1.8; list-style-type: square;">
+          <li>Darslar va dars jadvallari faqat tizim ma'muri (root_admin) tomonidan boshqariladi.</li>
+          <li>Sizning davomatingiz dars sessiyasi yakunlangach, ma'ruzachi (lecturer) tomonidan commit qilinadi.</li>
+          <li>Xavfsizlik qoidasi: Faqat tizimda <b class="text-dark">PRESENT</b> deb qayd etilgan talabalar vazifa (source code) topshira oladi.</li>
+          <li>Belgilangan <b class="text-dark">deadline_ts</b> o'tgandan so'ng, tizim yuborish kanallarini avtomatik ravishda bloklaydi (`submission_locked`).</li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <div class="col-12 col-lg-5">
-    <div class="card card-soft p-4 h-100">
-      <h5 class="fw-semibold mb-3">
-        <i class="bi bi-info-circle me-2 text-primary"></i>Qisqa eslatma
-      </h5>
-      <ul class="mb-0 text-soft">
-        <li>Darslar jadvali admin tomonidan belgilanadi.</li>
-        <li>Davomat darsdan so‘ng teacher tomonidan belgilab boriladi.</li>
-        <li>Faqat qatnashgan student vazifa topshira oladi.</li>
-        <li>Deadline tugagandan keyin submission yopiladi.</li>
-      </ul>
-    </div>
-  </div>
 </div>
 {% endblock %}
