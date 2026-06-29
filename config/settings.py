@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'codepaste',
     'group',
     'chat',
+    'notifications',
     #External Apps
     'corsheaders',
     'axes',
@@ -145,3 +146,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
