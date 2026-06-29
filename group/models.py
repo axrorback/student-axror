@@ -9,6 +9,7 @@ class Group(models.Model):
     name = models.CharField(max_length=120,unique=True)
     description = models.TextField(blank=True)
     teacher = models.ForeignKey(User,on_delete=models.CASCADE,related_name="teaching_groups")
+    telegram_chat_id = models.BigIntegerField(blank=True,null=True,help_text="Telegram group chat ID")
     image = models.ImageField(upload_to="groups/",blank=True,null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
