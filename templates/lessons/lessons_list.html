@@ -218,7 +218,7 @@
 
                         <div>
                           {% if item.can_submit %}
-                            <a href="{% url 'submit_assignment' item.assignment.id %}" class="btn btn-outline-dark font-monospace" style="font-size: 10px; padding: 2px 6px;">
+                            <a href="{% url 'assignment_submit' item.assignment.id %}" class="btn btn-outline-dark font-monospace" style="font-size: 10px; padding: 2px 6px;">
                               re_push
                             </a>
                           {% else %}
