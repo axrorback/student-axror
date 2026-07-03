@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import LessonRecording
+
+
+@admin.register(LessonRecording)
+class LessonRecordingAdmin(admin.ModelAdmin):
+    list_display = ('lesson','created_at','uploaded_by')
