@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Course List{% endblock %}
+
+{% block content %}
+
+<body>
+{% for course in courses %}
+
+{{ course.title }}
+
+{{ course.price }}
+
+<a href="{% url 'pay_course' course.id %}">
+    Click orqali to'lash
+</a>
+
+{% endfor %}
+</body>
+
+
+{% endblock %}
