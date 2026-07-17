@@ -12,10 +12,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost']
 
-CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8000',
-    'https://student.axror.tech',
-]
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 INSTALLED_APPS = [
