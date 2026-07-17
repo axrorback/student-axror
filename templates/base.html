@@ -249,6 +249,10 @@
                             <i class="bi bi-chat-left-text"></i> feedback_yozish
                         </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'courses' %}">
+                            <i class="bi bi-box-arrow-in-right"></i> kurslar
+                        </a>
                 {% else %}
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="{% url 'student_login' %}">
@@ -300,6 +304,7 @@
                 <li class="sidebar-item"><a class="sidebar-link" href="{% url 'leaderboard' %}"><i class="bi bi-trophy"></i> leaderboard</a></li>
                 <li class="sidebar-item"><a class="sidebar-link" href="{% url 'create_paste' %}"><i class="bi bi-code-slash"></i> code_create</a></li>
                 <li class="sidebar-item"><a class="sidebar-link" href="{% url 'feedback' %}"><i class="bi bi-chat-left-text"></i> feedback</a></li>
+                <li class="sidebar-item"><a class="sidebar-link" href="{% url 'courses' %}"><i class="bi bi-box-arrow-in-right"></i> kurslar</a></li>
                 {% if request.session.student_auid or user.is_authenticated %}
                     <li class="sidebar-item border-top mt-2 pt-2">
                         <a class="sidebar-link text-danger" href="{% url 'student_logout' %}"><i class="bi bi-box-arrow-right"></i> chiqish</a>
