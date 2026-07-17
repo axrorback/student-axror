@@ -3,6 +3,9 @@ from django.utils import timezone
 from django.db.models import Q, Count
 from django.contrib import messages
 
+from group.models import GroupMember
+
+
 from accounts.decorators import student_required
 from attendance.models import Attendance, AttendanceStatus
 from accounts.models import StudentProfile
@@ -160,24 +163,57 @@ def lessons_list_view(request):
     Student lessons page:
     - Upcoming lessons
     - Past lessons
-    - Har lesson uchun attendance, assignment, submission holati
+    - Attendance
+    - Assignment
+    - Submission
     """
+
     now = timezone.localtime(timezone.now())
 
     student = get_current_student(request)
     if not student:
         return redirect("student_login")
 
+    # Studentning guruhi
+    group_member = (
+        GroupMember.objects
+        .select_related("group")
+        .filter(student=student)
+        .first()
+    )
+
+    # Agar guruh bo'lmasa
+    if not group_member:
+        return render(request, "lessons/lessons_list.html", {
+            "student": student,
+            "upcoming": [],
+            "past": [],
+            "now": now,
+        })
+
+    group = group_member.group
+
     upcoming_qs = (
         Lesson.objects
-        .filter(starts_at__gte=now)
+        .select_related("teacher", "group")
+        .filter(
+            group=group,
+            starts_at__gte=now,
+        )
         .exclude(status=LessonStatus.CANCELED)
         .order_by("starts_at")
     )
 
     past_qs = (
         Lesson.objects
-        .filter(Q(ends_at__lt=now) | Q(status=LessonStatus.DONE))
+        .select_related("teacher", "group")
+        .filter(
+            group=group
+        )
+        .filter(
+            Q(ends_at__lt=now) |
+            Q(status=LessonStatus.DONE)
+        )
         .exclude(status=LessonStatus.CANCELED)
         .order_by("-starts_at")
     )
@@ -186,15 +222,25 @@ def lessons_list_view(request):
         items = []
 
         for lesson in lessons:
+
             attendance = get_attendance_for_student(lesson, student)
+
             assignment = get_assignment_for_lesson(lesson)
+
             submission = None
             can_submit = False
             submit_reason = None
 
             if assignment:
-                submission = get_submission_for_student(assignment, student)
-                can_submit, submit_reason = can_student_submit(student, assignment)
+                submission = get_submission_for_student(
+                    assignment,
+                    student,
+                )
+
+                can_submit, submit_reason = can_student_submit(
+                    student,
+                    assignment,
+                )
 
             items.append({
                 "lesson": lesson,
@@ -207,17 +253,19 @@ def lessons_list_view(request):
 
         return items
 
-    upcoming = build_lesson_items(upcoming_qs)
-    past = build_lesson_items(past_qs)
-
     context = {
         "student": student,
-        "upcoming": upcoming,
-        "past": past,
+        "group": group,
+        "upcoming": build_lesson_items(upcoming_qs),
+        "past": build_lesson_items(past_qs),
         "now": now,
     }
-    return render(request, "lessons/lessons_list.html", context)
 
+    return render(
+        request,
+        "lessons/lessons_list.html",
+        context,
+    )
 
 @student_required
 def lesson_detail_view(request, pk):

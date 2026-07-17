@@ -2,159 +2,291 @@
 {% block title %}Darslar — Student Portal{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-4">
-  <div>
-    <h3 class="fw-semibold mb-1">Darslar</h3>
-    <div class="text-soft">Upcoming va oldingi darslar</div>
-  </div>
-</div>
+<div class="font-monospace">
 
-<div class="row g-3">
-  <div class="col-12 col-lg-6">
-    <div class="card card-soft p-4">
-      <h5 class="fw-semibold mb-3">
-        <i class="bi bi-calendar2-week me-2 text-primary"></i>Upcoming
-      </h5>
+  <!-- TOP BANNER & SYSTEM METADATA -->
+  <div class="row align-items-start g-3 mb-4 border-bottom pb-3">
+    <!-- LEFT SIDE: COMMAND -->
+    <div class="col-12 col-md-7">
+      <h3 class="fw-semibold mb-1 fs-4"><span class="text-success">$</span> systemctl list-sessions</h3>
+      <div class="text-muted small">
+        Sizning guruh darslaringiz (faol rejalashtirilgan va arxivlangan darslar logs)
+      </div>
+    </div>
 
-      {% if upcoming %}
-        <div class="list-group">
-          {% for item in upcoming %}
-            <a class="list-group-item list-group-item-action"
-               href="{% url 'lesson_detail' item.lesson.id %}">
-              <div class="d-flex justify-content-between align-items-start gap-2">
-                <div>
-                  <div class="fw-semibold">{{ item.lesson.title }}</div>
-                  <div class="text-muted small">
-                    {{ item.lesson.starts_at|date:"Y-m-d H:i" }}
-                  </div>
-                  <div class="text-muted small">
-                    {% if item.lesson.location %}
-                      <i class="bi bi-geo-alt me-1"></i>{{ item.lesson.location }}
-                    {% else %}
-                      —
-                    {% endif %}
-                  </div>
-                </div>
-
-                <div class="text-end">
-                  {% if item.attendance %}
-                    {% if item.attendance.status == "PRESENT" %}
-                      <span class="badge text-bg-success">Present</span>
-                    {% elif item.attendance.status == "LATE" %}
-                      <span class="badge text-bg-warning">Late</span>
-                    {% elif item.attendance.status == "ABSENT" %}
-                      <span class="badge text-bg-danger">Absent</span>
-                    {% else %}
-                      <span class="badge text-bg-secondary">{{ item.attendance.status }}</span>
-                    {% endif %}
-                  {% endif %}
-                </div>
-              </div>
-
-              {% if item.assignment %}
-                <div class="mt-2 small">
-                  <div class="text-soft">
-                    <i class="bi bi-journal-code me-1"></i>
-                    Assignment: {{ item.assignment.title }}
-                  </div>
-                  <div class="text-soft">
-                    Deadline: {{ item.assignment.deadline|date:"Y-m-d H:i" }}
-                  </div>
-
-                  {% if item.submission %}
-                    <div class="mt-1">
-                      {% if item.submission.status == "APPROVED" %}
-                        <span class="badge text-bg-success">Approved</span>
-                      {% elif item.submission.status == "REJECTED" %}
-                        <span class="badge text-bg-danger">Rejected</span>
-                      {% else %}
-                        <span class="badge text-bg-warning">Pending</span>
-                      {% endif %}
-                    </div>
-                  {% else %}
-                    <div class="mt-1">
-                      <span class="badge text-bg-secondary">Topshirilmagan</span>
-                    </div>
-                  {% endif %}
-                </div>
-              {% endif %}
-            </a>
-          {% endfor %}
+    <!-- RIGHT SIDE: BIG TARGET NODE (GROUP) INFO -->
+    <div class="col-12 col-md-5 text-md-end">
+      {% if group %}
+        <div class="p-2.5 rounded-3 d-inline-block text-start w-100 w-md-auto" style="border: 1px solid var(--border); background: var(--card-bg); min-width: 260px;">
+          <div class="text-muted small d-flex align-items-center gap-1" style="font-size: 0.7rem;">
+            <span class="p-1 rounded-circle bg-success d-inline-block animate-pulse" style="width: 6px; height: 6px;"></span>
+            ACTIVE_TARGET_NODE:
+          </div>
+          <div class="fw-bold text-dark fs-3 my-0.5" style="letter-spacing: -0.5px;">
+            {{ group.name|upper }}
+          </div>
+          <div class="text-muted style-note-text" style="font-size: 0.68rem; line-height: 1.3;">
+            <i class="bi bi-info-circle-fill text-primary"></i> NOTE: Ushbu klasterga tegishli barcha darslar va topshiriqlar quyida realtime sinxronizatsiya qilinmoqda.
+          </div>
         </div>
-      {% else %}
-        <div class="text-soft">Upcoming dars yo‘q.</div>
       {% endif %}
     </div>
   </div>
 
-  <div class="col-12 col-lg-6">
-    <div class="card card-soft p-4">
-      <h5 class="fw-semibold mb-3">
-        <i class="bi bi-clock-history me-2 text-primary"></i>History
-      </h5>
+  {% if not group %}
+    <!-- EMULATED EXCEPTION / ERROR MESSAGE -->
+    <div class="p-5 text-center my-4 rounded-3 shadow-sm" style="border: 1px solid #ffc9c9; background: #fffaf0;">
+      <div class="mb-3">
+        <i class="bi bi-exclamation-octagon-fill text-danger" style="font-size: 3rem;"></i>
+      </div>
+      <h4 class="fw-bold text-dark fs-5">[EXCEPTION: NODE_NOT_ASSIGNED]</h4>
+      <p class="text-muted mx-auto small mb-3" style="max-width: 500px; line-height: 1.6;">
+        Siz hozircha hech qanday akademik guruhga biriktirilmagansiz. Guruh identifikatori aniqlanmaguncha darslar va xronologik vazifalar sinxronizatsiya qilinmaydi.
+      </p>
+      <div>
+        <a href="{% url 'profile_view' %}" class="btn btn-sm btn-dark px-3">
+          <i class="bi bi-person me-1"></i> inspect_profile
+        </a>
+      </div>
+    </div>
+  {% else %}
 
-      {% if past %}
-        <div class="list-group">
-          {% for item in past %}
-            <a class="list-group-item list-group-item-action"
-               href="{% url 'lesson_detail' item.lesson.id %}">
-              <div class="d-flex justify-content-between align-items-start gap-2">
-                <div>
-                  <div class="fw-semibold">{{ item.lesson.title }}</div>
-                  <div class="text-muted small">{{ item.lesson.starts_at|date:"Y-m-d" }}</div>
-                  <div class="text-muted small">
-                    {{ item.lesson.starts_at|date:"H:i" }} – {{ item.lesson.ends_at|date:"H:i" }}
-                  </div>
-                </div>
+    <!-- TWO-COLUMN WORKSPACE -->
+    <div class="row g-4">
 
-                <div class="text-end">
-                  {% if item.attendance %}
-                    {% if item.attendance.status == "PRESENT" %}
-                      <span class="badge text-bg-success">Present</span>
-                    {% elif item.attendance.status == "LATE" %}
-                      <span class="badge text-bg-warning">Late</span>
-                    {% elif item.attendance.status == "ABSENT" %}
-                      <span class="badge text-bg-danger">Absent</span>
-                    {% elif item.attendance.status == "EXCUSED" %}
-                      <span class="badge text-bg-info">Excused</span>
-                    {% else %}
-                      <span class="badge text-bg-secondary">{{ item.attendance.status }}</span>
-                    {% endif %}
-                  {% endif %}
-                </div>
-              </div>
+      <!-- LEFT COLUMN: UPCOMING RUNTIMES -->
+      <div class="col-12 col-lg-6">
+        <div class="p-4 rounded-3 h-100" style="border: 1px solid var(--border); background: var(--card-bg);">
+          <h5 class="fw-bold text-dark fs-6 mb-3 d-flex align-items-center justify-content-between border-bottom pb-2">
+            <span><i class="bi bi-terminal-play text-success me-1"></i> [QUEUE: UPCOMING]</span>
+            <span class="badge bg-light text-dark border font-monospace small" style="font-size: 11px;">{{ upcoming|length }} jobs</span>
+          </h5>
 
-              {% if item.assignment %}
-                <div class="mt-2 small">
-                  <div class="text-soft">
-                    <i class="bi bi-journal-code me-1"></i>
-                    Assignment: {{ item.assignment.title }}
-                  </div>
-
-                  {% if item.submission %}
-                    <div class="mt-1">
-                      {% if item.submission.status == "APPROVED" %}
-                        <span class="badge text-bg-success">Approved</span>
-                      {% elif item.submission.status == "REJECTED" %}
-                        <span class="badge text-bg-danger">Rejected</span>
-                      {% else %}
-                        <span class="badge text-bg-warning">Pending</span>
+          {% if upcoming %}
+            <div class="d-flex flex-column gap-3">
+              {% for item in upcoming %}
+                <div class="p-3 rounded border bg-white" style="border-color: var(--border) !important;">
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                      <a href="{% url 'lesson_detail' item.lesson.id %}" class="fw-bold text-decoration-none text-dark d-block fs-6 mb-1 hover-primary">
+                        {{ item.lesson.title }}
+                      </a>
+                      <div class="text-muted small" style="font-size: 0.8rem;">
+                        <i class="bi bi-clock me-1"></i> {{ item.lesson.starts_at|date:"Y-m-d H:i" }}
+                      </div>
+                      <div class="text-muted small mt-1" style="font-size: 0.8rem;">
+                        <i class="bi bi-geo-alt me-1"></i> node: {{ item.lesson.location|default:"remote_host" }}
+                      </div>
+                      {% if item.lesson.teacher %}
+                        <div class="text-muted small mt-1" style="font-size: 0.8rem;">
+                          <i class="bi bi-person-workspace me-1"></i> user: {{ item.lesson.teacher.full_name|default:item.lesson.teacher.username }}
+                        </div>
                       {% endif %}
                     </div>
-                  {% else %}
-                    <div class="mt-1">
-                      <span class="badge text-bg-secondary">Topshirilmagan</span>
+
+                    <div class="text-end">
+                      {% if item.attendance %}
+                        {% if item.attendance.status == "PRESENT" %}
+                          <span class="badge style-status-present">PRESENT</span>
+                        {% elif item.attendance.status == "LATE" %}
+                          <span class="badge style-status-late">LATE</span>
+                        {% elif item.attendance.status == "ABSENT" %}
+                          <span class="badge style-status-absent">ABSENT</span>
+                        {% else %}
+                          <span class="badge bg-light border text-muted">{{ item.attendance.status }}</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="badge bg-light text-muted border small font-monospace" style="border-style: dashed !important;">STAGING</span>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  {% if item.assignment %}
+                    <div class="mt-3 pt-2.5 border-top small" style="font-size: 0.8rem; border-color: var(--border) !important;">
+                      <div class="text-dark fw-semibold text-truncate mb-1">
+                        <i class="bi bi-journal-code text-primary me-1"></i> task: {{ item.assignment.title }}
+                      </div>
+                      <div class="text-muted mb-2">
+                        <i class="bi bi-alarm me-1"></i> deadline: <span class="text-danger fw-semibold">{{ item.assignment.deadline|date:"Y-m-d H:i" }}</span>
+                      </div>
+
+                      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-2">
+                        <div>
+                          {% if item.submission %}
+                            {% if item.submission.status == "APPROVED" %}
+                              <span class="badge font-monospace text-success bg-success-subtle border border-success-subtle"><i class="bi bi-check-circle me-1"></i>APPROVED</span>
+                            {% elif item.submission.status == "REJECTED" %}
+                              <span class="badge font-monospace text-danger bg-danger-subtle border border-danger-subtle"><i class="bi bi-x-circle me-1"></i>REJECTED</span>
+                            {% else %}
+                              <span class="badge font-monospace text-warning bg-warning-subtle border border-warning-subtle"><i class="bi bi-hourglass-split me-1"></i>PENDING</span>
+                            {% endif %}
+                          {% else %}
+                            <span class="badge font-monospace text-muted bg-body-secondary border">UNTRACKED</span>
+                          {% endif %}
+                        </div>
+
+                        <div>
+                          {% if item.can_submit %}
+                            <a href="{% url 'submit_assignment' item.assignment.id %}" class="btn btn-dark btn-xs font-monospace">
+                              <i class="bi bi-cloud-arrow-up"></i> push_code
+                            </a>
+                          {% else %}
+                            {% if item.submit_reason %}
+                              <span class="text-muted style-reason d-block border-start ps-2" title="{{ item.submit_reason }}">
+                                <i class="bi bi-lock-fill text-danger me-1"></i>locked
+                              </span>
+                            {% endif %}
+                          {% endif %}
+                        </div>
+                      </div>
                     </div>
                   {% endif %}
                 </div>
-              {% endif %}
-            </a>
-          {% endfor %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-muted border border-dashed rounded-3 p-4 text-center small">
+              <i class="bi bi-calendar-minus me-1"></i> [INFO] Navbatda faol dars jarayonlari aniqlanmadi.
+            </div>
+          {% endif %}
         </div>
-      {% else %}
-        <div class="text-soft">History hozircha yo‘q.</div>
-      {% endif %}
+      </div>
+
+      <!-- RIGHT COLUMN: PAST ARCHIVES -->
+      <div class="col-12 col-lg-6">
+        <div class="p-4 rounded-3 h-100" style="border: 1px solid var(--border); background: var(--card-bg);">
+          <h5 class="fw-bold text-dark fs-6 mb-3 d-flex align-items-center justify-content-between border-bottom pb-2">
+            <span><i class="bi bi-clock-history text-primary me-1"></i> [ARCHIVE: HISTORY]</span>
+            <span class="badge bg-light text-muted border font-monospace small" style="font-size: 11px;">{{ past|length }} logs</span>
+          </h5>
+
+          {% if past %}
+            <div class="d-flex flex-column gap-2" style="max-height: 650px; overflow-y: auto; padding-right: 4px;">
+              {% for item in past %}
+                <div class="p-3 rounded border bg-white" style="border-color: var(--border) !important;">
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                      <a href="{% url 'lesson_detail' item.lesson.id %}" class="fw-bold text-decoration-none text-dark d-block mb-1 hover-primary small">
+                        {{ item.lesson.title }}
+                      </a>
+                      <div class="text-muted" style="font-size: 0.75rem;">
+                        <i class="bi bi-calendar-check me-1"></i> {{ item.lesson.starts_at|date:"Y-m-d" }}
+                        <span class="mx-1">|</span>
+                        <i class="bi bi-clock me-1"></i> {{ item.lesson.starts_at|date:"H:i" }} – {{ item.lesson.ends_at|date:"H:i" }}
+                      </div>
+                    </div>
+
+                    <div class="text-end">
+                      {% if item.attendance %}
+                        {% if item.attendance.status == "PRESENT" %}
+                          <span class="badge style-status-present" style="font-size: 10px; padding: 2px 6px;">PRESENT</span>
+                        {% elif item.attendance.status == "LATE" %}
+                          <span class="badge style-status-late" style="font-size: 10px; padding: 2px 6px;">LATE</span>
+                        {% elif item.attendance.status == "ABSENT" %}
+                          <span class="badge style-status-absent" style="font-size: 10px; padding: 2px 6px;">ABSENT</span>
+                        {% elif item.attendance.status == "EXCUSED" %}
+                          <span class="badge font-monospace text-primary bg-primary-subtle border-0" style="font-size: 10px; padding: 2px 6px;">EXCUSED</span>
+                        {% else %}
+                          <span class="badge bg-light border text-muted" style="font-size: 10px; padding: 2px 6px;">{{ item.attendance.status }}</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="badge bg-light border text-muted small" style="font-size: 10px; padding: 2px 6px;">NULL</span>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  {% if item.assignment %}
+                    <div class="mt-2 pt-2 border-top small" style="font-size: 0.75rem; border-color: var(--border) !important;">
+                      <div class="text-muted text-truncate mb-1.5">
+                        <i class="bi bi-journal-code text-primary me-1"></i> task: {{ item.assignment.title }}
+                      </div>
+
+                      <div class="d-flex align-items-center justify-content-between gap-2">
+                        <div>
+                          {% if item.submission %}
+                            {% if item.submission.status == "APPROVED" %}
+                              <span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i>APPROVED</span>
+                            {% elif item.submission.status == "REJECTED" %}
+                              <span class="text-danger fw-bold"><i class="bi bi-x-circle-fill me-1"></i>REJECTED</span>
+                            {% else %}
+                              <span class="text-warning fw-bold"><i class="bi bi-hourglass-split me-1"></i>PENDING</span>
+                            {% endif %}
+                          {% else %}
+                            <span class="text-muted">UNTRACKED</span>
+                          {% endif %}
+                        </div>
+
+                        <div>
+                          {% if item.can_submit %}
+                            <a href="{% url 'assignment_submit' item.assignment.id %}" class="btn btn-outline-dark font-monospace" style="font-size: 10px; padding: 2px 6px;">
+                              re_push
+                            </a>
+                          {% else %}
+                            {% if item.submit_reason %}
+                              <span class="text-muted" style="font-size: 10px;">
+                                <i class="bi bi-lock-fill text-muted me-0.5"></i> closed
+                              </span>
+                            {% endif %}
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-muted border border-dashed rounded-3 p-4 text-center small">
+              <i class="bi bi-clock me-1"></i> [INFO] Arxivlangan darslar tarixi mavjud emas.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
     </div>
-  </div>
+  {% endif %}
 </div>
+
+<!-- SCOPED RE-STYLING -->
+<style>
+  .hover-primary:hover {
+    color: var(--primary) !important;
+    text-decoration: underline !important;
+  }
+  .btn-xs {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 4px;
+  }
+  .style-reason {
+    font-size: 11px;
+    max-width: 150px;
+    white-space: normal;
+  }
+  .style-status-present {
+    background: rgba(26, 127, 55, 0.1);
+    color: #1a7f37;
+    border: 1px solid rgba(26,127,55,0.2);
+  }
+  .style-status-late {
+    background: #fff8e1;
+    color: #b78103;
+    border: 1px solid #ffe082;
+  }
+  .style-status-absent {
+    background: #ffebe9;
+    color: #cf222e;
+    border: 1px solid rgba(207,34,46,0.2);
+  }
+
+  /* ANIMATE PULSE FOR ACTIVE LOG NODE */
+  @keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+  }
+  .animate-pulse {
+    animation: pulse 2s infinite ease-in-out;
+  }
+</style>
 {% endblock %}

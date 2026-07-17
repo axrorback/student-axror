@@ -7,23 +7,54 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
-
+from group.models import Group
 from accounts.models import StudentProfile
 from lessons.models import Lesson, LessonStatus
 from .models import Attendance, AttendanceStatus
 
+
 @staff_member_required
 def teacher_lessons_view(request):
-    """Teacher: darslar ro'yxati (attendance belgilash uchun)"""
+    """Teacher: darslar ro'yxati (search, group va status filtri bilan)"""
     now = timezone.localtime(timezone.now())
+    user = request.user
 
-    lessons = (
-        Lesson.objects
-        .exclude(status=LessonStatus.CANCELED)
-        .order_by("-starts_at")[:80]
-    )
+    # O'qituvchiga tegishli faol guruhlarni olish
+    teacher_groups = Group.objects.filter(teacher=user, is_active=True)
 
-    return render(request, "attendance/teacher_lessons.html", {"lessons": lessons, "now": now})
+    # Barcha bekor qilinmagan darslarni boshlang'ich query sifatida olish
+    lessons = Lesson.objects.exclude(status="CANCELED")  # Yoki sizdagi LessonStatus.CANCELED
+
+    # --- FILTRLASH MANTIQI ---
+
+    # 1. Guruh bo'yicha filtr (UUID bo'lgani uchun)
+    group_id = request.GET.get('group')
+    if group_id:
+        lessons = lessons.filter(group_id=group_id)
+
+    # 2. Davomat statusi bo'yicha filtr (masalan: PENDING yoki COMPLETED)
+    # Agar sizda dars o'zida status bo'lsa yoki dars statusiga qarab ajratilsa:
+    status_filter = request.GET.get('status')
+    if status_filter:
+        lessons = lessons.filter(status=status_filter)
+
+    # 3. Matnli qidiruv (Dars sarlavhasi bo'yicha)
+    search_query = request.GET.get('q', '').strip()
+    if search_query:
+        lessons = lessons.filter(title__icontains=search_query)
+
+    # Yakuniy tartiblash va limit
+    lessons = lessons.order_by("-starts_at")[:80]
+
+    context = {
+        "lessons": lessons,
+        "teacher_groups": teacher_groups,
+        "now": now,
+        "selected_group": group_id,
+        "selected_status": status_filter,
+        "search_query": search_query,
+    }
+    return render(request, "attendance/teacher_lessons.html", context)
 
 @staff_member_required
 def teacher_attendance_view(request, lesson_id: UUID):

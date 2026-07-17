@@ -8,16 +8,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 import dj_database_url
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost']
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
+CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',
-    'https://student.axror.tech'
+    'https://student.axror.tech',
 ]
-
 
 
 INSTALLED_APPS = [
@@ -35,6 +33,7 @@ INSTALLED_APPS = [
     'codepaste',
     'group',
     'chat',
+    'notifications',
     #External Apps
     'corsheaders',
     'axes',
@@ -97,7 +96,7 @@ PASSWORD_HASHERS = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-NOT_PRODUCTION = True
+NOT_PRODUCTION = False
 
 
 if NOT_PRODUCTION:
@@ -109,9 +108,14 @@ if NOT_PRODUCTION:
     }
 else:
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL')
-        )
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
+        }
     }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -142,3 +146,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')

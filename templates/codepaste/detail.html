@@ -5,92 +5,96 @@
 {% block extra_head %}
 <style>
   .code-container {
-    background: white;
-    border-radius: 16px;
-    border: 1px solid #eaeef5;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid var(--border);
     overflow: hidden;
-    position: relative; /* Overlay uchun kerak */
+    position: relative;
   }
 
-  /* Muddati tugagan holat uchun xiralashtirish */
+  /* Muddati tugagan holat uchun terminal blur effekti */
   .expired-blur {
-    filter: blur(4px);
+    filter: blur(5px);
     pointer-events: none;
     user-select: none;
-    opacity: 0.6;
+    opacity: 0.4;
   }
 
   .expired-overlay {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 10;
+    z-index: 100;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: space-counter(1px);
   }
 
   .expired-card {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    background: #fff;
+    padding: 24px;
+    border-radius: 6px;
     text-align: center;
-    border: 1px solid #ffc9c9;
-    max-width: 400px;
+    border: 2px solid #cf222e; /* GitHub xatolik qizil rangi */
+    max-width: 420px;
+    font-family: var(--bs-font-monospace);
   }
 
   .code-header-main {
-    padding: 20px;
-    border-bottom: 1px solid #f0f2f5;
-    background: #fafbfc;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--terminal-head);
   }
 
   .user-info-box { display: flex; align-items: center; gap: 12px; }
 
   .user-avatar {
-    width: 45px; height: 45px;
-    background: var(--brand-soft); color: var(--brand);
-    border-radius: 12px; display: flex; align-items: center; justify-content: center;
-    font-size: 20px; font-weight: bold;
+    width: 38px; height: 38px;
+    background: #fff;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: bold;
   }
 
-  #editor { height: 500px; border-top: 1px solid #f0f2f5; }
+  #editor { height: 500px; }
 
-  .meta-item { font-size: 13px; color: #6c757d; display: flex; align-items: center; gap: 5px; }
+  .meta-item { font-size: 13px; color: #57606a; display: flex; align-items: center; gap: 5px; }
 
   .timer-badge {
-    padding: 6px 12px; border-radius: 8px; font-variant-numeric: tabular-nums;
+    padding: 4px 10px; border-radius: 4px; font-variant-numeric: tabular-nums;
+    font-size: 0.8rem;
   }
 
-  /* Holatga qarab ranglar */
-  .badge-active { background: #fff5f5; color: #e03131; border: 1px solid #ffc9c9; }
-  .badge-expired { background: #f1f3f5; color: #adb5bd; border: 1px solid #dee2e6; }
+  .badge-active { background: rgba(26, 127, 55, 0.08); color: var(--primary); border: 1px solid rgba(26,127,55,0.2); }
+  .badge-expired { background: #f6f8fa; color: #cf222e; border: 1px solid #d0d7de; }
 
   .code-footer {
-    padding: 15px 20px; background: #f8f9fa; border-top: 1px solid #f0f2f5;
+    padding: 12px 20px; background: var(--bg); border-top: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: center;
   }
-
-  .btn-action { border-radius: 8px; padding: 6px 16px; font-weight: 500; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center font-monospace">
   <div class="col-xl-10">
 
     <div class="code-container shadow-sm">
 
       {% if expired %}
       <div class="expired-overlay">
-        <div class="expired-card">
-          <div class="mb-3 text-danger">
-            <i class="bi bi-clock-fill" style="font-size: 3rem;"></i>
+        <div class="expired-card shadow">
+          <div class="mb-2 text-danger">
+            <i class="bi bi-shield-slash-fill" style="font-size: 2.5rem;"></i>
           </div>
-          <h4 class="fw-bold">Muddati tugagan</h4>
-          <p class="text-muted small">Ushbu kodning amal qilish muddati tugagan va u arxivlangan. Mazmunni ko'rish imkonsiz.</p>
-          <a href="{% url 'dashboard' %}" class="btn btn-brand btn-sm px-4">Dashboardga qaytish</a>
+          <h5 class="fw-bold text-dark">ERR_LINK_EXPIRED</h5>
+          <p class="text-muted small" style="font-size: 0.8rem; line-height: 1.5;">Ushbu paste tokening amal qilish muddati yakunlangan va u xavfsizlik maqsadida xotiradan (cache) o'chirilgan.</p>
+          <a href="{% url 'dashboard' %}" class="btn btn-sm btn-dark w-100 py-1.5 fw-semibold" style="border-radius: 4px;">
+            execute_return --dashboard
+          </a>
         </div>
       </div>
       {% endif %}
@@ -100,22 +104,21 @@
           <div class="row align-items-center">
             <div class="col-md-7">
               <div class="user-info-box">
-                <div class="user-avatar">{{ paste.user.full_name|slice:":1" }}</div>
+                <div class="user-avatar text-uppercase">~{{ paste.user.full_name|slice:":1" }}</div>
                 <div>
-                  <h5 class="mb-0 fw-bold text-dark">{{ paste.user.full_name }}</h5>
+                  <h6 class="mb-0 fw-bold text-dark">{{ paste.user.full_name|lower }}</h6>
                   <div class="d-flex gap-3 mt-1">
-                    <span class="meta-item"><i class="bi bi-person"></i> {{ paste.user.auid }}</span>
-                    <span class="meta-item text-primary fw-bold"><i class="bi bi-code-square"></i> {{ paste.language|upper }}</span>
+                    <span class="meta-item"><i class="bi bi-terminal"></i> auid: {{ paste.user.auid }}</span>
+                    <span class="meta-item text-success fw-semibold"><i class="bi bi-file-code"></i> env: {{ paste.language|upper }}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="col-md-5 text-md-end mt-3 mt-md-0">
-              <div class="small text-muted mb-1">Holati:</div>
+            <div class="col-md-5 text-md-end mt-2 mt-md-0">
               <div class="d-inline-flex align-items-center timer-badge {% if expired %}badge-expired{% else %}badge-active{% endif %}">
-                <i class="bi {% if expired %}bi-lock-fill{% else %}bi-clock-history{% endif %} me-2"></i>
-                <span id="timer" class="fw-bold">{% if expired %}Muddati tugadi{% else %}...{% endif %}</span>
+                <i class="bi {% if expired %}bi-lock-fill{% else %}bi-stopwatch-fill{% endif %} me-1.5"></i>
+                <span id="timer" class="fw-semibold">{% if expired %}ttl_expired{% else %}syncing...{% endif %}</span>
               </div>
             </div>
           </div>
@@ -124,18 +127,18 @@
         <div id="editor"></div>
 
         <div class="code-footer">
-          <div class="d-flex gap-2">
-            <button class="btn btn-light border btn-action btn-sm" onclick="copyCode(this)" {% if expired %}disabled{% endif %}>
-              <i class="bi bi-clipboard me-1"></i> Nusxalash
+          <div class="d-flex gap-1.5">
+            <button class="btn btn-sm bg-white border py-1.5 px-3" onclick="copyCode(this)" {% if expired %}disabled{% endif %} style="font-size: 0.8rem; border-radius: 4px; color: var(--text);">
+              <i class="bi bi-clipboard-data me-1"></i> copy_raw
             </button>
-            <button class="btn btn-light border btn-action btn-sm" onclick="copyUrl(this)" {% if expired %}disabled{% endif %}>
-              <i class="bi bi-link-45deg me-1"></i> Havola
+            <button class="btn btn-sm bg-white border py-1.5 px-3" onclick="copyUrl(this)" {% if expired %}disabled{% endif %} style="font-size: 0.8rem; border-radius: 4px; color: var(--text);">
+              <i class="bi bi-link-45deg me-1"></i> copy_url
             </button>
           </div>
 
           <div>
-            <button class="btn btn-success btn-action btn-sm" onclick="shareTelegram()" {% if expired %}disabled{% endif %}>
-              <i class="bi bi-telegram me-1"></i> Ulashish
+            <button class="btn btn-sm py-1.5 px-3 text-white fw-semibold" onclick="shareTelegram()" {% if expired %}disabled{% endif %} style="background-color: var(--primary); font-size: 0.8rem; border-radius: 4px;">
+              <i class="bi bi-telegram me-1"></i> pipe_telegram
             </button>
           </div>
         </div>
@@ -150,8 +153,7 @@
 <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
 
 <script>
-// Faqat muddati o'tmagan bo'lsa kodni yuklaymiz
-let codeValue = `{% if not expired %}{{ paste.code|escapejs }}{% else %}// Muddati tugagan{% endif %}`;
+let codeValue = `{% if not expired %}{{ paste.code|escapejs }}{% else %}// [ERROR] Content encrypted or deleted due to TTL settings.{% endif %}`;
 let shareUrl = window.location.href;
 
 require.config({ paths: { vs: 'https://unpkg.com/monaco-editor/min/vs' }});
@@ -163,40 +165,42 @@ require(['vs/editor/editor.main'], function() {
     theme: "vs-dark",
     readOnly: true,
     automaticLayout: true,
-    fontSize: 15,
+    fontSize: 14,
+    fontFamily: 'JetBrains Mono, Fira Code, Monaco, monospace',
     minimap: { enabled: !{{ expired|yesno:"true,false" }} },
     scrollBeyondLastLine: false,
-    padding: { top: 20, bottom: 20 },
+    lineHeight: 22,
+    padding: { top: 16, bottom: 16 },
   });
 });
 
 function showToast(msg, btn) {
   const originalText = btn.innerHTML;
-  btn.innerHTML = `<i class="bi bi-check2"></i> Tayyor!`;
-  btn.classList.replace('btn-light', 'btn-dark');
+  btn.innerHTML = `<i class="bi bi-check-all text-success"></i> status_200`;
+  btn.style.borderColor = "var(--primary)";
   setTimeout(() => {
     btn.innerHTML = originalText;
-    btn.classList.replace('btn-dark', 'btn-light');
-  }, 2000);
+    btn.style.borderColor = "var(--border)";
+  }, 1800);
 }
 
 function copyCode(btn) {
   navigator.clipboard.writeText(codeValue);
-  showToast("Nusxalandi", btn);
+  showToast("Raw", btn);
 }
 
 function copyUrl(btn) {
   navigator.clipboard.writeText(shareUrl);
-  showToast("Nusxalandi", btn);
+  showToast("URL", btn);
 }
 
 function shareTelegram() {
-  const text = "Kodni ko'rish uchun havola:";
+  const text = "Student Portal orqali yuklangan kod havola terminali:";
   const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
   window.open(tgUrl, "_blank");
 }
 
-/* TIMER FUNKSIYASI */
+/* DEVIATION TIME DECREMENT (TTL) */
 {% if not expired %}
 const expireDate = new Date("{{ paste.expire_at|date:'c' }}");
 
@@ -205,7 +209,7 @@ function updateTimer() {
   const diff = expireDate - now;
 
   if (diff <= 0) {
-    location.reload(); // Muddati tugashi bilan sahifani yangilab overlayni ko'rsatamiz
+    location.reload();
     return;
   }
 
@@ -213,7 +217,11 @@ function updateTimer() {
   const minutes = Math.floor((diff % 3600000) / 60000);
   const seconds = Math.floor((diff % 60000) / 1000);
 
-  document.getElementById("timer").innerText = (hours > 0 ? hours + "s " : "") + minutes + "m " + seconds + "s";
+  let formattedTime = "ttl: ";
+  if (hours > 0) formattedTime += hours + "h ";
+  formattedTime += minutes + "m " + seconds + "s";
+
+  document.getElementById("timer").innerText = formattedTime;
 }
 
 setInterval(updateTimer, 1000);

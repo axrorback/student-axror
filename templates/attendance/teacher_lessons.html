@@ -2,48 +2,114 @@
 {% block title %}Teacher — Lessons{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <div>
-    <h3 class="fw-semibold mb-1">Teacher Panel</h3>
-    <div class="text-soft">Darsni tanlang va davomat belgilang</div>
-  </div>
-  <a href="/admin/" class="btn btn-outline-secondary btn-sm">
-    <i class="bi bi-gear me-1"></i> Admin
-  </a>
-</div>
+<div class="font-monospace">
 
-<div class="card card-soft p-3">
-  <div class="table-responsive">
-    <table class="table align-middle mb-0">
-      <thead>
-        <tr>
-          <th>Lesson</th>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Status</th>
-          <th class="text-end">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for l in lessons %}
-          <tr>
-            <td class="fw-semibold">{{ l.title }}</td>
-            <td>{{ l.starts_at|date:"Y-m-d" }}</td>
-            <td>{{ l.starts_at|date:"H:i" }} – {{ l.ends_at|date:"H:i" }}</td>
-            <td>
-              <span class="badge text-bg-secondary">{{ l.status }}</span>
-            </td>
-            <td class="text-end">
-              <a class="btn btn-sm btn-brand" href="{% url 'teacher_attendance' l.id %}">
-                <i class="bi bi-check2-square me-1"></i> Mark Attendance
-              </a>
-            </td>
-          </tr>
-        {% empty %}
-          <tr><td colspan="5" class="text-center text-soft py-4">Dars yo‘q.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- HEADER SECTION -->
+  <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+    <div>
+      <h3 class="fw-semibold mb-1 fs-4"><span class="text-success">$</span> teacher_panel --dashboard</h3>
+      <div class="text-muted small">Dars tizimini filtrlang, tanlang va talabalar davomatini qayd eting</div>
+    </div>
+    <a href="/admin/" class="btn btn-sm" style="border: 1px solid var(--border); background: #fff; color: var(--text);">
+      <i class="bi bi-gear me-1"></i> admin_panel
+    </a>
   </div>
+
+  <!-- SEARCH & FILTER INTERACTION BAR -->
+  <div class="p-3 rounded-3 mb-4" style="border: 1px solid var(--border); background: var(--bg);">
+    <form method="get" action="" class="row g-2 align-items-center">
+
+      <!-- Search Input -->
+      <div class="col-12 col-md-4">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white border-end-0" style="border: 1px solid var(--border); color: var(--text); font-size: 0.8rem;">
+            <i class="bi bi-search"></i>
+          </span>
+          <input type="text" name="q" class="form-control form-control-sm border-start-0 shadow-none"
+                 placeholder="Search lesson title..." value="{{ search_query }}" style="border: 1px solid var(--border); font-size: 0.85rem;">
+        </div>
+      </div>
+
+      <!-- Group Filter -->
+      <div class="col-12 col-sm-6 col-md-3">
+        <select name="group" class="form-select form-select-sm shadow-none" style="border: 1px solid var(--border); font-size: 0.85rem;" onchange="this.form.submit()">
+          <option value="">-- select_group (all) --</option>
+          {% for g in teacher_groups %}
+            <option value="{{ g.id }}" {% if selected_group == g.id|stringformat:"s" %}selected{% endif %}>{{ g.name|lower }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Attendance Status Filter -->
+      <div class="col-12 col-sm-6 col-md-3">
+        <select name="status" class="form-select form-select-sm shadow-none" style="border: 1px solid var(--border); font-size: 0.85rem;" onchange="this.form.submit()">
+          <option value="">-- select_status (all) --</option>
+          <option value="PENDING" {% if selected_status == "PENDING" %}selected{% endif %}>pending (davomat olinmagan)</option>
+          <option value="COMPLETED" {% if selected_status == "COMPLETED" %}selected{% endif %}>completed (yakunlangan)</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="col-12 col-md-2 d-flex gap-1">
+        <button type="submit" class="btn btn-sm w-100 fw-semibold text-white" style="background-color: var(--primary); border: 1px solid rgba(27,31,36,0.15);">
+          filter
+        </button>
+        {% if search_query or selected_group or selected_status %}
+          <a href="{% url 'teacher_lessons' %}" class="btn btn-sm btn-light border" style="font-size: 0.8rem;" title="Filtrlarni tozalash">
+            <i class="bi bi-x-circle"></i>
+          </a>
+        {% endif %}
+      </div>
+
+    </form>
+  </div>
+
+  <!-- LESSONS LOG MATRIX -->
+  <div class="p-3 rounded-3" style="border: 1px solid var(--border); background: var(--card-bg);">
+    <div class="table-responsive border rounded">
+      <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
+        <thead style="background: var(--terminal-head); border-bottom: 1px solid var(--border);">
+          <tr>
+            <th scope="col" class="py-2.5 ps-3">lesson_title</th>
+            <th scope="col" class="py-2.5">date</th>
+            <th scope="col" class="py-2.5">time_window</th>
+            <th scope="col" class="py-2.5">status</th>
+            <th scope="col" class="py-2.5 text-end pe-3">action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in lessons %}
+            <tr>
+              <td class="py-2.5 ps-3 fw-semibold text-dark">{{ l.title }}</td>
+              <td class="py-2.5 text-muted">{{ l.starts_at|date:"Y-m-d" }}</td>
+              <td class="py-2.5 text-muted">{{ l.starts_at|date:"H:i" }} – {{ l.ends_at|date:"H:i" }}</td>
+              <td class="py-2.5">
+                {% if l.status == "PENDING" %}
+                  <span class="badge" style="background: #fff8e1; color: #b78103; border: 1px solid #ffe082;">pending</span>
+                {% elif l.status == "COMPLETED" %}
+                  <span class="badge" style="background: rgba(26, 127, 55, 0.1); color: var(--primary); border: 1px solid rgba(26,127,55,0.2);">completed</span>
+                {% else %}
+                  <span class="badge bg-secondary-subtle text-muted border">{{ l.status|lower }}</span>
+                {% endif %}
+              </td>
+              <td class="py-2.5 text-end pe-3">
+                <a class="btn btn-sm py-1 px-2.5 fw-semibold text-white" style="background-color: var(--primary); font-size: 0.75rem; border-radius: 4px;" href="{% url 'teacher_attendance' l.id %}">
+                  <i class="bi bi-check2-square me-1"></i> mark_attendance
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4 small">
+                <i class="bi bi-folder-x d-block fs-4 mb-1 opacity-50"></i>
+                [INFO] Tanlangan filtrlarga mos darslar topilmadi. Logs are empty.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

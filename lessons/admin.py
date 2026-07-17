@@ -28,6 +28,7 @@ class LessonAdmin(admin.ModelAdmin):
         ("Vaqt", {"fields": ("starts_at", "ends_at")}),
         ("Qo‘shimcha", {"fields": ("location", "content")}),
         ("O'qituvchi",{"fields": ("teacher",)}),
+        ("Guruh", {"fields": ("group",)}),
         ("System", {"fields": ("created_at", "updated_at")}),
     )
     readonly_fields = ("created_at", "updated_at")
