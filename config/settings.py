@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 import dj_database_url
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost']
 
@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'group',
     'chat',
     'notifications',
+    'payments',
     #External Apps
     'corsheaders',
     'axes',
@@ -96,7 +97,7 @@ PASSWORD_HASHERS = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-NOT_PRODUCTION = False
+NOT_PRODUCTION = True
 
 
 if NOT_PRODUCTION:
@@ -148,3 +149,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+
+CLICK_BASE_URL = os.getenv('CLICK_BASE_URL')
