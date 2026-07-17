@@ -10,7 +10,7 @@ import dj_database_url
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['student.axror.tech', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ["*"]
 
 CORS_ORIGIN_ALLOW_ALL = True
 
