@@ -22,12 +22,12 @@ def courses(request):
 
 
 @student_required
-def pay_course(request, course_id):
+def pay_course(request, uuid):
 
     profile = StudentProfile.objects.get(
         auid=request.session["student_auid"])
 
-    course = get_object_or_404(Course,id=course_id,is_active=True,)
+    course = get_object_or_404(Course,id=uuid,is_active=True,)
 
     order = Order.objects.create(student=profile,course=course,amount=course.price,)
 
