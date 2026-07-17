@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h3>{{ order.course.title }}</h3>
+
+<p>Summa: {{ order.amount }} so'm</p>
+
+{% if order.status == "paid" %}
+    <div class="alert alert-success">
+        ✅ To'lov muvaffaqiyatli qabul qilindi.
+    </div>
+
+{% elif order.status == "pending" %}
+    <div class="alert alert-warning">
+        ⏳ To'lov tekshirilmoqda...
+    </div>
+
+{% else %}
+    <div class="alert alert-danger">
+        ❌ To'lov bekor qilingan.
+    </div>
+{% endif %}
+</body>
+</html>
