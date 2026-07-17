@@ -150,3 +150,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 
 CLICK_BASE_URL = os.getenv('CLICK_BASE_URL')
+
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# HTTPS orqali cookie yuborilishini majburlash
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Agar brauzer cross-site deb hisoblayotgan bo'lsa, Lax yoki None qilish yordam beradi
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
