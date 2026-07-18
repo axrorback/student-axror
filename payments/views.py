@@ -55,7 +55,7 @@ def payment_callback(request):
     try:
         data = json.loads(request.body)
 
-        order = Order.objects.get(student__auid=data["order_id"])
+        order = Order.objects.get(id=data["order_id"])
 
         if data["status"] == "paid":
             order.status = Order.Status.PAID
