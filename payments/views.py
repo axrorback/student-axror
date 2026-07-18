@@ -7,8 +7,9 @@ from accounts.models import StudentProfile
 import requests
 import json
 from django.http import JsonResponse
+import logging
 
-
+logger = logging.getLogger(__name__)
 @student_required
 def courses(request):
 
@@ -51,34 +52,30 @@ def pay_course(request, uuid):
 
 @csrf_exempt
 def payment_callback(request):
+    try:
+        logger.info("BODY: %s", request.body)
 
-    if request.method != "POST":
+        data = json.loads(request.body)
+
+        logger.info("DATA: %s", data)
+
+        order = Order.objects.get(pk=data["order_id"])
+
+        if data["status"] == "paid":
+            order.status = Order.Status.PAID
+        elif data["status"] == "cancelled":
+            order.status = Order.Status.CANCELLED
+
+        order.save(update_fields=["status"])
+
+        return JsonResponse({"success": True})
+
+    except Exception:
+        logger.exception("Payment callback error")
         return JsonResponse(
-            {
-                "success": False
-            },
-            status=405,
+            {"success": False},
+            status=500,
         )
-
-    data = json.loads(request.body)
-
-    order = Order.objects.get(id=data["order_id"])
-
-    if data["status"] == "paid":
-
-        order.status = Order.Status.PAID
-
-    elif data["status"] == "cancelled":
-
-        order.status = Order.Status.CANCELLED
-
-    order.save(update_fields=["status"])
-
-    return JsonResponse(
-        {
-            "success": True
-        }
-    )
 
 @student_required
 def payment_success(request, uuid):
