@@ -35,7 +35,7 @@ def pay_course(request, uuid):
     response = requests.post(
         settings.CLICK_BASE_URL,
         json={
-            "id": str(order.student.auid),
+            "id": str(order.id),
             "amount": int(course.price),
             "payment_method": "click",
             "return_url": request.build_absolute_uri(reverse("payment_success", args=[str(order.id)])),
