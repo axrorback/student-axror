@@ -35,7 +35,7 @@ def pay_course(request, uuid):
     response = requests.post(
         settings.CLICK_BASE_URL,
         json={
-            "id": str(order.id),
+            "id": str(order.student.auid),
             "amount": int(course.price),
             "payment_method": "click",
             "return_url": request.build_absolute_uri(reverse("payment_success", args=[str(order.id)])),
@@ -53,13 +53,9 @@ def pay_course(request, uuid):
 @csrf_exempt
 def payment_callback(request):
     try:
-        logger.info("BODY: %s", request.body)
-
         data = json.loads(request.body)
 
-        logger.info("DATA: %s", data)
-
-        order = Order.objects.get(pk=data["order_id"])
+        order = Order.objects.get(student__auid=data["order_id"])
 
         if data["status"] == "paid":
             order.status = Order.Status.PAID
