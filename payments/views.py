@@ -9,6 +9,8 @@ import json
 from django.http import JsonResponse
 import logging
 
+
+
 logger = logging.getLogger(__name__)
 @student_required
 def courses(request):
@@ -35,7 +37,7 @@ def pay_course(request, uuid):
     response = requests.post(
         settings.CLICK_BASE_URL,
         json={
-            "id": str(order.id),
+            "external_service_id": str(order.student.auid),
             "amount": int(course.price),
             "payment_method": "click",
             "return_url": request.build_absolute_uri(reverse("payment_success", args=[str(order.id)])),
@@ -55,7 +57,7 @@ def payment_callback(request):
     try:
         data = json.loads(request.body)
 
-        order = Order.objects.get(id=data["order_id"])
+        order = Order.objects.get(student__auid=data["external_service_id"])
 
         if data["status"] == "paid":
             order.status = Order.Status.PAID
