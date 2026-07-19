@@ -57,7 +57,7 @@ def payment_callback(request):
     try:
         data = json.loads(request.body)
 
-        order = Order.objects.get(id=data["external_service_id"])
+        order = get_object_or_404(Order, id=data["external_service_id"])
 
         if data["status"] == "paid":
             order.status = Order.Status.PAID
