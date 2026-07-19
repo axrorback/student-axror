@@ -37,7 +37,7 @@ def pay_course(request, uuid):
     response = requests.post(
         settings.CLICK_BASE_URL,
         json={
-            "external_service_id": str(order.student.auid),
+            "external_service_id": str(order.id),
             "amount": int(course.price),
             "payment_method": "click",
             "return_url": request.build_absolute_uri(reverse("payment_success", args=[str(order.id)])),
@@ -57,7 +57,7 @@ def payment_callback(request):
     try:
         data = json.loads(request.body)
 
-        order = Order.objects.get(student__auid=data["external_service_id"])
+        order = Order.objects.get(id=data["external_service_id"])
 
         if data["status"] == "paid":
             order.status = Order.Status.PAID
