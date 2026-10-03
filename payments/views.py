@@ -1,4 +1,5 @@
-from django.shortcuts import render , get_object_or_404 ,redirect ,reverse
+from django.shortcuts import render , get_object_or_404 ,redirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from config import settings
 from accounts.decorators import student_required
