@@ -96,22 +96,20 @@ PASSWORD_HASHERS = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-NOT_PRODUCTION = True
 
 
-if NOT_PRODUCTION:
+if os.environ.get("DATABASE_URL"):
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+        "default": dj_database_url.config(
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
 else:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 
